@@ -7,7 +7,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.IO;
 using System.Diagnostics;
 
@@ -106,7 +105,7 @@ namespace FVModSync
             foreach (string modFile in modFiles)
             {
                 string[] relevantPathParts = modFile.Split('\\');
-                string relevantPath = String.Join("\\", relevantPathParts.Skip(2));
+                string relevantPath = String.Join("\\", relevantPathParts.Skip(2).ToArray());
 
                 if (modFile.EndsWith(".csv"))
                 {

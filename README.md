@@ -2,16 +2,18 @@
 
 A tool to install game mods for [Life is Feudal: Forest Village]. FVModSync enables users to organise their mods in a separate folder and copy them over automatically, rather than having to edit files in the game folder by hand. This ought to make it easier for players to use various different mods in parallel, at least until an official tool for this purpose is released. Also, it allows modders to include only the relevant data (i.e. content they have actually changed) in their mods, which enhances compatibility between different mods.
 
-Version 0.1b written by pbox for **game version 0.9.6005** (2016-12-09).
+Version 0.1.1b written by pbox for **game version 0.9.6005** (2016-12-09).
 
 
 ##Features
 
-* Copy content from multiple CVS snippets in /Mods to a single target file in the game folder
-* Copy files other than CVS (scripts, images ...) as they are, keeping the directory structure intact
+* Copy content from multiple CSV snippets in /Mods to a single target file in the game folder
+* Copy files other than CSV (scripts, images ...) as they are, keeping the directory structure intact
 
 
 ##Requirements
+
+0. MS .NET Framework 4.5 is required for this version (I've changed this to .NET 3.5 for future updates)
 
 1. You need to create a Mods folder in your game files manually (ought to be Program Files/Steam/steamapps/common/Life is Feudal Forest Village), top level. The actual name of that folder is irrelevant, it's only referred to as "Mods folder" here for sake of simplicity.
 
@@ -36,7 +38,7 @@ Mods
 * FVModSync_exportedCSV (will be created by FVModSync)
 
 
-[1] quickbms is needed to export the unmodded CVS data from the game .pak files, to "fill in the blanks" so to speak (i.e. when you have mods that only modify three lines of a CVS, this unmodified data is copied over for the rest so we don't end up with incomplete files).  
+[1] quickbms is needed to export the unmodded CSV data from the game .pak files, to "fill in the blanks" so to speak (i.e. when you have mods that only modify three lines of a CSV, this unmodified data is copied over for the rest so we don't end up with incomplete files).  
 [2] I believe it's good practice to include author names in uploads, so that one can reliably distinguish between files from different creators. Downloaders can rename the top level folder, e.g. from pbox_nicemod to ugly-mod-by-random-person, but need to leave the rest of the directory structure intact.
 
 
@@ -50,7 +52,7 @@ It will put up a console window and tell you what it's doing. If you run into is
 
 ##Known Issues / Notes
 
-* CVS exceptions: Right now this does not handle the following files:
+* CSV exceptions: Right now this does not handle the following files:
 
   * \cfg\dress.csv
   * \cfg\LOD.csv
@@ -61,7 +63,7 @@ This is because those have multiple entries with identical "names" (fields in th
 
 * Work folders: FVModSync will create a folder named "fvmodsync_exported" in your game files, which contains various files exported from cfg.pak (one of the game packages). You can delete it if it bothers you, but it'll reappear next time you run the program. If you empty it (but leave the folder intact), FVModSync will currently get a bit stuck, so don't do that.
 
-* Excess files: Right now FVModSync will copy every CVS it knows about to the game folder, regardless of whether a file actually contains modded content. Doesn't hurt anything (those files are not large) but certainly is not pretty.  
+* Excess files: Right now FVModSync will copy every CSV it knows about to the game folder, regardless of whether a file actually contains modded content. Doesn't hurt anything (those files are not large) but certainly is not pretty.  
 
 
 
@@ -73,16 +75,6 @@ FVModSync creates a backup of CSV files that already exist in the game folder wh
 
 If you have all your mods installed with FVModSync, and then something goes wrong, reinstalling them should be quite simple: remove all the cfg/script/etc folders (those that have the same name as a .pak) from your game files, and then run FVModSync.exe for a fresh install of all mods from /Mods. Of course if you have made additional manual edits, you need to re-do those.
 
-
-##To Do / Wishlist
-
-* ConfigReader -- Validate game version: Figure out whether it's compatible with the installed game version
-* Verbose switch: Let users tone down the console output
-* Exported files (fvmodsync_exported): find less pedestrian way to determine whether those exports are actually valid -- right now it is just "if dir exists"
-* Error catching in case quickbms does not behave as expected 
-* Error catching for most everything else actually
-* Dirty bit or some other mechanism so that we copy only those CVS that are actually modded
-* DictHandler: find some intelligent way to deal with those multiple-identical-first-field CVS files
 
 
 ##Warranty / Copyleft

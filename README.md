@@ -2,7 +2,7 @@
 
 A tool to install game mods for [Life is Feudal: Forest Village]. FVModSync enables users to organise their mods in a separate folder and copy them over automatically, rather than having to edit files in the game folder by hand. This ought to make it easier for players to use various different mods in parallel, at least until an official tool for this purpose is released. Also, it allows modders to include only the relevant data (i.e. content they have actually changed) in their mods, which enhances compatibility between different mods.
 
-Version 0.1b written by pbox for **game version 0.9.6005** (2016-12-09).
+Version 0.1.1b written by pbox for **game version 0.9.6005** (2016-12-09).
 
 
 ##Features

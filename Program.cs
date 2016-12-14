@@ -4,53 +4,25 @@ Published under the GNU General Public License https://www.gnu.org/licenses/gpl-
 */
 
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.IO;
 using System.Diagnostics;
 
 namespace FVModSync
 {
-
     public class Program
     {
-
         // TODO verbose switch
 
-        public const string ExportFolderName = "FVModSync_exportedCSV";
-        public const string ModsSubfolderName = "mods";
-
-        public static void CopyFileFromModDir(string modFile, string relevantPath)
-        {
-            string targetFile = @"..\" + relevantPath;
-
-            // how do we deal with existing files here? backup?
-
-            if (File.Exists(targetFile))
-            {
-                File.Delete(targetFile);
-                File.Copy(modFile, targetFile);
-
-                Console.WriteLine("{0} -- Copying file to {1} (overwrite)", modFile, targetFile);
-            }
-            else
-            {
-                string targetDir = Path.GetDirectoryName(targetFile);
-                Directory.CreateDirectory(targetDir);
-                File.Copy(modFile, targetFile);
-
-                Console.WriteLine("{0} -- Copying file to {1} (new)", modFile, targetFile);
-            }
-        }
+        private const string ExportFolderName = "FVModSync_exportedCSV";
+        private const string ModsSubfolderName = "mods";
 
         public static void Main(string[] args)
         {
-
             // unpack cfg.pak in case user doesn't have it unpacked already
             // TODO find less pedestrian way (than just "if dir exists") to determine whether those exports are actually valid
-          
-            if (!Directory.Exists(ExportFolderName)) 
+
+            if (!Directory.Exists(ExportFolderName))
             {
                 // TODO error catching if something goes wrong here
                 // oldversion: Process quickbms = Process.Start(@"quickbms\quickbms.exe", @"-F *.csv -o -q -Y -Q quickbms\life_is_feudal.bms ..\cfg.pak " + ExportFolderName);
@@ -66,10 +38,8 @@ namespace FVModSync
 
                 Console.WriteLine("Exporting cfg.pak from game files to {0}", ExportFolderName);
             }
-         
 
             // create internal dictionaries analog to file list in config
-
             string[] csvPaths = ConfigReader.LoadCsvPaths();
 
 
@@ -105,11 +75,11 @@ namespace FVModSync
             foreach (string modFile in modFiles)
             {
                 string[] relevantPathParts = modFile.Split('\\');
-                string relevantPath = String.Join("\\", relevantPathParts.Skip(2).ToArray());
+                string relevantPath = string.Join("\\", relevantPathParts.Skip(2).ToArray());
 
-                if (modFile.EndsWith(".csv"))
+                if (modFile.EndsWith(".csv", StringComparison.Ordinal))
                 {
-                    if (DictHandler.DictExists(relevantPath)) 
+                    if (DictHandler.DictExists(relevantPath))
                     {
                         // TODO set dirty bit (so we know we actually need to copy this over)
                         DictHandler.CopyModdedFileToDict(modFile);
@@ -121,7 +91,7 @@ namespace FVModSync
                         Program.CopyFileFromModDir(modFile, relevantPath);
                     }
                 }
-                else  
+                else
                 {
                     Program.CopyFileFromModDir(modFile, relevantPath);
                 }
@@ -136,6 +106,29 @@ namespace FVModSync
             Console.WriteLine(" ");
             Console.WriteLine("Everything seems to be fine. Press Enter to close");
             Console.ReadLine();
+        }
+
+        private static void CopyFileFromModDir(string modFile, string relevantPath)
+        {
+            string targetFile = @"..\" + relevantPath;
+
+            // how do we deal with existing files here? backup?
+
+            if (File.Exists(targetFile))
+            {
+                File.Delete(targetFile);
+                File.Copy(modFile, targetFile);
+
+                Console.WriteLine("{0} -- Copying file to {1} (overwrite)", modFile, targetFile);
+            }
+            else
+            {
+                string targetDir = Path.GetDirectoryName(targetFile);
+                Directory.CreateDirectory(targetDir);
+                File.Copy(modFile, targetFile);
+
+                Console.WriteLine("{0} -- Copying file to {1} (new)", modFile, targetFile);
+            }
         }
     }
 }

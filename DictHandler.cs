@@ -1,14 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.IO;
 
 namespace FVModSync
 {
     public class DictHandler
     {
-        public static Dictionary<string, Dictionary<string, string>> libraryOfEverything = new Dictionary<string, Dictionary<string, string>>();
+        private static readonly Dictionary<string, Dictionary<string, string>> libraryOfEverything = new Dictionary<string, Dictionary<string, string>>();
 
         public static void CopyFileToDict(string csvAbsPath, string csvIntPath)
         {
@@ -36,7 +35,7 @@ namespace FVModSync
             Console.WriteLine("{0} -- Copying to dictionary", csvAbsPath);
         }
 
-        public static void CopyModdedFileToDict(string csvModdedFilePath) 
+        public static void CopyModdedFileToDict(string csvModdedFilePath)
         {
             int relevantPathStart = csvModdedFilePath.IndexOf('\\', csvModdedFilePath.IndexOf('\\') + 1); // this is obscene
             string csvIntPath = csvModdedFilePath.Substring(relevantPathStart);
@@ -51,7 +50,7 @@ namespace FVModSync
 
                 foreach (string contentLine in contentLines)
                 {
-                    // use first field as dict key 
+                    // use first field as dict key
 
                     string key = contentLine.Split(',').First();
 
@@ -73,10 +72,7 @@ namespace FVModSync
             {
                 return true;
             }
-            else
-            {
-                return false;
-            }
+            return false;
         }
 
         public static void CreateGameFileFromDict(string csvIntPath)
@@ -87,7 +83,7 @@ namespace FVModSync
             using (Stream gameFile = File.Open(".." + csvIntPath, FileMode.Create))
             {
                 using (StreamWriter writer = new StreamWriter(gameFile))
-                { 
+                {
                     string[] contentLines = libraryOfEverything[csvIntPath].Values.ToArray();
 
                     for (int i = 0; i < (contentLines.Length -1); i++)

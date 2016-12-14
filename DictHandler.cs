@@ -87,12 +87,17 @@ namespace FVModSync
 
             using (Stream gameFile = File.Open(".." + csvIntPath, FileMode.Create))
             {
-                StreamWriter writer = new StreamWriter(gameFile);
-                writer.WriteLine(libraryOfEverything[csvIntPath]["fvs_header"]);
+                using (StreamWriter writer = new StreamWriter(gameFile))
+                { 
+                    string[] contentLines = libraryOfEverything[csvIntPath].Values.ToArray();
 
-                foreach (string contentLine in libraryOfEverything[csvIntPath].Values)
-                {
-                    writer.WriteLine(contentLine);
+                    for (int i = 0; i < (contentLines.Length -1); i++)
+                    {
+                        writer.WriteLine(contentLines[i]);
+                    }
+
+                    // no CRLF after last line -- will crash game ver 0.9.6005 with cfg/Localization.csv and cfg/normal/plants.csv
+                    writer.Write(contentLines.Last());
                 }
             }
         }

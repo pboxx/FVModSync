@@ -5,15 +5,8 @@ A tool to install game mods for [Life is Feudal: Forest Village]. FVModSync enab
 v0.1.2beta, for game version **0.9.6005** (2016-12-09)
 
 
-
-**Releases**
-
-See [Releases] for the current release.
-
-
-
-**Changelog**
-
+Changelog
+--
 v0.1.2beta:
 * Change target to .NET 3.5
 * Fix DictHandler to skip empty lines in CSV  
@@ -24,16 +17,14 @@ v0.1.1beta:
 * Fixed bugs in DictHandler.cs (stream not closing; extra CRLF and duplicate headers in CSV)
 
 
-
-**Features**
-
+Features
+--
 * Copy content from multiple CSV snippets in modded files to a single target file in the game folder
 * Copy modded files other than CSV (scripts, images ...) as they are, keeping the directory structure intact
 
 
-
-**Requirements**
-
+Requirements
+--
 1. .NET Framework 3.5 or later is required for this version
 
 2. You need to create a Mods folder in your game files manually (ought to be Program Files/Steam/steamapps/common/Life is Feudal Forest Village), top level. The actual name of that folder is irrelevant, it's only referred to as "Mods folder" here for sake of simplicity.
@@ -49,8 +40,8 @@ v0.1.1beta:
 
 
 
-**Installation**
-
+Installation
+--
 Download the zip ([Releases], scroll down) and unzip its contents to your Mods folder, top level. This is what your Mods folder should look like: 
 
 Mods
@@ -63,21 +54,20 @@ Mods
     * quickbms.exe
 * FVModSync.cfg
 * FVModSync.exe
+* FVModSync.exe.config
 * FVModSync_exportedCSV (will be created by FVModSync)
+* readme.md (optional)
 
 
-
-
-**How to use**
-
+How to use
+--
 1. Double click on the exe. 
 
 It will put up a console window and tell you what it's doing; that window will remain open until you hit Enter (it'll tell you that as well).
 
 
-
-**Known Issues / Notes**
-
+Known Issues / Notes
+--
 * CSV exceptions: Right now this does not handle the following files:
 
   * \cfg\dress.csv
@@ -90,9 +80,8 @@ This is because those have multiple entries with identical "names" (fields in th
 * FVModSync will create a folder named "fvmodsync_exported" in your game files, which contains various files exported from cfg.pak (one of the game packages). You can delete it if it bothers you, but it'll reappear next time you run the program. If you empty it (but leave the folder intact), FVModSync will currently get a bit stuck, so don't do that. 
 
 
-
-**Troubleshooting / Feedback**
-
+Troubleshooting / Feedback
+--
 * You can post in [Issues] or in the [Feedback thread] (Forest Village modding group on Steam).
 
 * If you run into issues, the text from the console window may be helpful to figure out the problem: you can copy it with Edit > Select All; Edit > Copy via the context menu (rightclick) on the title bar. The game dumps a log in (Game Folder)/Log.log that is also often quite helpful.
@@ -102,15 +91,13 @@ This is because those have multiple entries with identical "names" (fields in th
 * If you have all your mods installed with FVModSync, and then something goes wrong, reinstalling them should be quite simple: remove all the cfg/script/etc folders (those that have the same name as a .pak) from your game files, and then run FVModSync.exe for a fresh install of all mods from /Mods. Of course if you have made additional manual edits, you need to re-do those.
 
 
-
-**To Do / Wishlist**
-
+To Do / Wishlist
+--
 * See the [Feedback thread].
 
 
-
-**Warranty / Copyleft**
-
+Warranty / Copyleft
+--
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful, but without any warranty; without even the implied warranty of merchantability or fitness for a particular purpose. See the [GNU General Public License v3] for more details.

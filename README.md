@@ -8,7 +8,7 @@ This is currently in beta. See [Releases] for releases and notes, and the [devel
 
 ##Troubleshooting / Feedback
 
-You can post here in Issues or in the [Feedback thread] (Forest Village modding group on Steam).
+You can post here in [Issues] or in the [Feedback thread] (Forest Village modding group on Steam).
 
 ##Warranty / Copyleft
 
@@ -22,4 +22,5 @@ This program is distributed in the hope that it will be useful, but without any 
 [GNU General Public License v3]: https://www.gnu.org/licenses/gpl-3.0.txt
 [Releases]: https://github.com/pboxx/FVModSync/releases
 [develop branch]: https://github.com/pboxx/FVModSync/tree/develop
+[Issues]: https://github.com/pboxx/FVModSync/issues
 [Feedback thread]: http://steamcommunity.com/groups/ForestVillageModding/discussions/0/154643249631885475/

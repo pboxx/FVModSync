@@ -8,11 +8,23 @@ namespace FVModSync
     public class DictHandler
     {
         private static readonly Dictionary<string, Dictionary<string, string>> libraryOfEverything = new Dictionary<string, Dictionary<string, string>>();
+        private static readonly Dictionary<string, bool> libraryOfModdedBits = new Dictionary<string, bool>();
+
+        public static void InitAsClean(string csvIntPath)
+        {
+            libraryOfModdedBits.Add(csvIntPath, false);
+        }
+
+        public static void SetDirty(string csvIntPath)
+        {
+            libraryOfModdedBits[csvIntPath] = true;            
+        }
 
         public static void CopyFileToDict(string csvAbsPath, string csvIntPath)
         {
-            // TODO throw some error if file not found
-            // TODO exception for stuff with multiple identical keys (like cfg/dress.csv, LOD.csv; removed from config for now)
+            // TODO throw some error if csvExtFile not found
+            // TODO no need to read files if not modded
+            // TODO handle stuff with multiple identical keys (like cfg/dress.csv, LOD.csv; removed from config for now)
 
             using (Stream csvExtFile = File.Open(csvAbsPath, FileMode.Open))
             {
@@ -21,15 +33,20 @@ namespace FVModSync
                 string content = reader.ReadToEnd();
 
                 libraryOfEverything.Add(csvIntPath, new Dictionary<string, string>());
-                libraryOfEverything[csvIntPath].Add ("fvs_header", header);
+                libraryOfEverything[csvIntPath].Add("fvs_header", header);
 
                 string[] contentLines = content.Split(new[] { "\r\n" }, StringSplitOptions.None);
+                // Console.WriteLine("File: {0} -- last line: {1} | ", csvAbsPath, contentLines.Last());
 
                 foreach (string contentLine in contentLines)
                 {
-                    string key = contentLine.Split(',').First();
+                    // skip any empty lines that happened due to CRLF at end
+                    if (contentLine != "")
+                    {
+                        string key = contentLine.Split(',').First();
 
-                    libraryOfEverything[csvIntPath].Add(key, contentLine);
+                        libraryOfEverything[csvIntPath].Add(key, contentLine);
+                    }
                 }
             }
             Console.WriteLine("{0} -- Copying to dictionary", csvAbsPath);
@@ -51,15 +68,16 @@ namespace FVModSync
                 foreach (string contentLine in contentLines)
                 {
                     // use first field as dict key
-
                     string key = contentLine.Split(',').First();
 
                     if (libraryOfEverything[csvIntPath].ContainsKey(key))
                     {
+                        // overwrite existing line in CSV
                         libraryOfEverything[csvIntPath][key] = contentLine;
                     }
                     else
                     {
+                        // add new line to CSV
                         libraryOfEverything[csvIntPath].Add(key, contentLine);
                     }
                 }
@@ -77,23 +95,28 @@ namespace FVModSync
 
         public static void CreateGameFileFromDict(string csvIntPath)
         {
-            string targetDir = @"..\" + Path.GetDirectoryName(csvIntPath);
-            Directory.CreateDirectory(targetDir);
-
-            using (Stream gameFile = File.Open(".." + csvIntPath, FileMode.Create))
+            if (libraryOfModdedBits[csvIntPath] == true) 
             {
-                using (StreamWriter writer = new StreamWriter(gameFile))
+                string targetDir = @"..\" + Path.GetDirectoryName(csvIntPath);
+                Directory.CreateDirectory(targetDir);
+
+                using (Stream gameFile = File.Open(".." + csvIntPath, FileMode.Create))
                 {
-                    string[] contentLines = libraryOfEverything[csvIntPath].Values.ToArray();
-
-                    for (int i = 0; i < (contentLines.Length -1); i++)
+                    using (StreamWriter writer = new StreamWriter(gameFile))
                     {
-                        writer.WriteLine(contentLines[i]);
-                    }
+                        string[] contentLines = libraryOfEverything[csvIntPath].Values.ToArray();
 
-                    // no CRLF after last line -- will crash game ver 0.9.6005 with cfg/Localization.csv and cfg/normal/plants.csv
-                    writer.Write(contentLines.Last());
+                        for (int i = 0; i < (contentLines.Length - 1); i++)
+                        {
+                            writer.WriteLine(contentLines[i]);
+                        }
+
+                        // no CRLF after last line -- will crash game ver 0.9.6005 with cfg/Localization.csv and cfg/normal/plants.csv
+                        // TODO check whether this is still necessary
+                        writer.Write(contentLines.Last());
+                    }
                 }
+                Console.WriteLine("Write dictionary to game files: {0}", csvIntPath);
             }
         }
     }

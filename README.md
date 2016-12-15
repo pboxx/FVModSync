@@ -79,6 +79,8 @@ This is because those have multiple entries with identical "names" (fields in th
 
 * FVModSync will create a folder named "fvmodsync_exported" in your game files, which contains various files exported from cfg.pak (one of the game packages). You can delete it if it bothers you, but it'll reappear next time you run the program. If you empty it (but leave the folder intact), FVModSync will currently get a bit stuck, so don't do that. 
 
+* When you patch the game, delete the fvmodsync_exported folder and let FVModSync regenerate it from the patched game files. Forgetting to do so may lead to missing strings and the like, since it will continue to use those (now outdated) files.
+
 
 Troubleshooting / Feedback
 --

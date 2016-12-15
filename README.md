@@ -11,15 +11,17 @@ This is currently in beta. See [Releases] for the current release.
 
 
 
+**Changelog**
+
+v0.1.1beta -- Fixed bugs in DictHandler.cs (stream not closing; extra CRLF and duplicate headers in CVS)
+
+
+
 **Features**
 
 * Copy content from multiple CVS snippets in /Mods to a single target file in the game folder
 * Copy files other than CVS (scripts, images ...) as they are, keeping the directory structure intact
 
-
-**Changelog**
-
-v0.1.1beta -- Fixed bugs in DictHandler.cs (stream not closing; extra CRLF and duplicate headers in CVS)
 
 
 

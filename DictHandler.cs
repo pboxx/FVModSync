@@ -20,6 +20,31 @@ namespace FVModSync
             libraryOfModdedBits[csvIntPath] = true;            
         }
 
+        public static void BackupAndCopy(string csvIntPath, string ExportFolder)
+        {
+            string gameCsvFilePath = @".." + csvIntPath;
+            string exportedCsvFilePath = ExportFolder + csvIntPath;
+
+            if (File.Exists(gameCsvFilePath))
+            {
+                string backupFilePath = gameCsvFilePath + ".backup";
+
+                File.Delete(backupFilePath);
+                File.Copy(gameCsvFilePath, backupFilePath);
+
+                Console.WriteLine("File exists: {0} -- create backup on disk", gameCsvFilePath);
+
+                // copy existing game file to internal dictionary
+                DictHandler.CopyFileToDict(gameCsvFilePath, csvIntPath);
+            }
+            else
+            {
+                // copy from exported files
+                DictHandler.CopyFileToDict(exportedCsvFilePath, csvIntPath);
+            }
+            DictHandler.InitAsClean(csvIntPath);
+        }
+
         public static void CopyFileToDict(string csvAbsPath, string csvIntPath)
         {
             // TODO throw some error if csvExtFile not found
@@ -78,19 +103,20 @@ namespace FVModSync
                 }
             }
         }
-
+      
         public static bool DictExists(string csvIntPath)
         {
-            if (libraryOfEverything.ContainsKey('\\' + csvIntPath))
+            if (libraryOfEverything.ContainsKey(csvIntPath))
             {
                 return true;
             }
             return false;
         }
+        
 
         public static void CreateGameFileFromDict(string csvIntPath)
         {
-            if (libraryOfModdedBits[csvIntPath] == true) 
+            if (libraryOfModdedBits.ContainsKey(csvIntPath)) 
             {
                 string targetDir = @"..\" + Path.GetDirectoryName(csvIntPath);
                 Directory.CreateDirectory(targetDir);

@@ -14,91 +14,62 @@ namespace FVModSync
     {
         // TODO verbose switch
 
-        private const string ExportFolderName = "FVModSync_exportedCSV";
-        private const string ModsSubfolderName = "mods";
+        private const string ExportFolder = "FVModSync_exportedFiles";
+        private const string ModsSubfolder = "mods";
+        private const string LuaIncludeFilePath = @"\scripts\include.lua";
 
         public static void Main(string[] args)
-        {
-            // unpack cfg.pak in case user doesn't have it unpacked already
-            // TODO find less pedestrian way (than just "if dir exists") to determine whether those exports are actually valid
+        {            
+            QuickBMSHandler.Unpack(@"..\cfg.pak", ExportFolder);
+            QuickBMSHandler.Unpack(@"..\scripts.pak", ExportFolder);
 
-            if (!Directory.Exists(ExportFolderName))
-            {
-                // TODO error catching if something goes wrong here
-                // oldversion: Process quickbms = Process.Start(@"quickbms\quickbms.exe", @"-F *.csv -o -q -Y -Q quickbms\life_is_feudal.bms ..\cfg.pak " + ExportFolderName);
+            Console.WriteLine("Searching mods folder: {0} ", ModsSubfolder);
 
-                Process quickbms = new Process();
-                quickbms.StartInfo.FileName = @"quickbms\quickbms.exe";
-                quickbms.StartInfo.Arguments = @"-F *.csv -o -q -Y -Q quickbms\life_is_feudal.bms ..\cfg.pak " + ExportFolderName;
-                quickbms.StartInfo.UseShellExecute = false;
-                quickbms.StartInfo.RedirectStandardInput = true;
-                quickbms.Start();
-                quickbms.StandardInput.WriteLine("\n");
-                quickbms.WaitForExit(1000);
+            string[] csvRecognisedPaths = ConfigReader.LoadCsvPaths();
+            string[] modFiles = Directory.GetFiles(ModsSubfolder, "*", SearchOption.AllDirectories);
 
-                Console.WriteLine("Export cfg.pak from game files to {0}", ExportFolderName);
-            }
-
-            // create internal dictionaries analog to file list in config
-            string[] csvPaths = ConfigReader.LoadCsvPaths();
-
-            foreach (string csvIntPath in csvPaths)
-            {
-                string gameCsvFilePath = @".." + csvIntPath;
-                string exportedCsvFilePath = ExportFolderName + csvIntPath;
-
-                if (File.Exists(gameCsvFilePath))
-                {
-                    string backupFilePath = gameCsvFilePath + ".backup";
-
-                    File.Delete(backupFilePath);
-                    File.Copy(gameCsvFilePath, backupFilePath);
-
-                    Console.WriteLine("File exists: {0} -- create backup on disk", gameCsvFilePath);
-
-                    // copy existing game file to internal dictionary
-                    DictHandler.CopyFileToDict(gameCsvFilePath, csvIntPath);
-                }
-                else
-                {
-                    // copy from exported files
-                    DictHandler.CopyFileToDict(exportedCsvFilePath, csvIntPath);
-                }
-                DictHandler.InitAsClean(csvIntPath);
-            }
-
-
-            Console.WriteLine("Searching mods folder: {0} ", ModsSubfolderName);
-
-            string[] modFiles = Directory.GetFiles(ModsSubfolderName, "*", SearchOption.AllDirectories);
             Array.Sort(modFiles, StringComparer.InvariantCulture);
- 
             Console.WriteLine("Modded files found:");
+
             foreach (string modFile in modFiles)
             {
                 Console.WriteLine(modFile);
-            } 
+            }
+            Console.WriteLine();
 
             foreach (string modFile in modFiles)
             {
                 string[] relevantPathParts = modFile.Split('\\');
                 string relevantPath = string.Join("\\", relevantPathParts.Skip(2).ToArray());
                 string targetFile = @"..\" + relevantPath;
-                string cvsIntPath = @"\" + relevantPath;
+                string intPath = @"\" + relevantPath;
+
 
                 if (modFile.EndsWith(".csv", StringComparison.Ordinal))
                 {
-                    if (DictHandler.DictExists(relevantPath))
+                    // is this a game file we handle
+
+                    if (csvRecognisedPaths.Contains(intPath) )
                     {
+                        if (!DictHandler.DictExists(intPath))
+                        {
+                            // create internal dictionary
+                            DictHandler.BackupAndCopy(intPath, ExportFolder);
+                        }
                         DictHandler.CopyModdedFileToDict(modFile);
-                        DictHandler.SetDirty(cvsIntPath);
+                        DictHandler.SetDirty(intPath);
 
                         Console.WriteLine("Copy CSV content to dictionary: {0}", modFile);
                     }
-                    else // this is a custom cvs
+                    else // this is a custom csv
                     {
                         Program.CopyFileFromModDir(modFile, targetFile);
                     }
+                }
+                else if (intPath == LuaIncludeFilePath)
+                {
+                    LuaHandler.BackupAndCopy(targetFile, ExportFolder + intPath);
+                    LuaHandler.CopyFileToIncludeList(modFile);
                 }
                 else // this is some other file
                 {
@@ -106,10 +77,15 @@ namespace FVModSync
                 }
             }
 
-            foreach (string csvIntPath in csvPaths)
+            Console.WriteLine();
+
+            foreach (string csvIntPath in csvRecognisedPaths)
             {
                 DictHandler.CreateGameFileFromDict(csvIntPath);
             }
+
+            LuaHandler.CreateGameFileFromList(LuaIncludeFilePath);
+
             Console.WriteLine(" ");
             Console.WriteLine("Everything seems to be fine. Press Enter to close");
             Console.ReadLine();
@@ -123,7 +99,6 @@ namespace FVModSync
             {
                 File.Delete(targetFile);
                 File.Copy(modFile, targetFile);
-
                 Console.WriteLine("Copy file {0} to {1} (overwrite)", modFile, targetFile);
             }
             else
@@ -131,7 +106,6 @@ namespace FVModSync
                 string targetDir = Path.GetDirectoryName(targetFile);
                 Directory.CreateDirectory(targetDir);
                 File.Copy(modFile, targetFile);
-
                 Console.WriteLine("Copy file {0} to {1} (new)", modFile, targetFile);
             }
         }

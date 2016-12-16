@@ -91,10 +91,9 @@ namespace FVModSync
                     if (DictHandler.DictExists(relevantPath))
                     {
                         DictHandler.CopyModdedFileToDict(modFile);
-                        Console.WriteLine("Copy CSV content to dictionary: {0}", modFile);
-
                         DictHandler.SetDirty(cvsIntPath);
-                        Console.WriteLine("Set dirty bit: {0}", cvsIntPath);
+
+                        Console.WriteLine("Copy CSV content to dictionary: {0}", modFile);
                     }
                     else // this is a custom cvs
                     {

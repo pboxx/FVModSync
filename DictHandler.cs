@@ -35,22 +35,17 @@ namespace FVModSync
                 libraryOfEverything.Add(csvIntPath, new Dictionary<string, string>());
                 libraryOfEverything[csvIntPath].Add("fvs_header", header);
 
-                string[] contentLines = content.Split(new[] { "\r\n" }, StringSplitOptions.None);
-                // Console.WriteLine("File: {0} -- last line: {1} | ", csvAbsPath, contentLines.Last());
+                string[] contentLines = content.Split(new[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
 
                 foreach (string contentLine in contentLines)
                 {
-                    // skip any empty lines that happened due to CRLF at end
-                    if (contentLine != "")
-                    {
-                        string key = contentLine.Split(',').First();
-
-                        libraryOfEverything[csvIntPath].Add(key, contentLine);
-                    }
+                    string key = contentLine.Split(',').First();
+                    libraryOfEverything[csvIntPath].Add(key, contentLine);
                 }
             }
-            Console.WriteLine("{0} -- Copying to dictionary", csvAbsPath);
+            // Console.WriteLine("Copy to dictionary: {0}", csvAbsPath);
         }
+
 
         public static void CopyModdedFileToDict(string csvModdedFilePath)
         {
@@ -63,7 +58,7 @@ namespace FVModSync
                 reader.ReadLine(); // skip the header
 
                 string content = reader.ReadToEnd();
-                string[] contentLines = content.Split(new[] { "\r\n" }, StringSplitOptions.None);
+                string[] contentLines = content.Split(new[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
 
                 foreach (string contentLine in contentLines)
                 {
@@ -106,14 +101,10 @@ namespace FVModSync
                     {
                         string[] contentLines = libraryOfEverything[csvIntPath].Values.ToArray();
 
-                        for (int i = 0; i < (contentLines.Length - 1); i++)
+                        foreach(string contentLine in contentLines) 
                         {
-                            writer.WriteLine(contentLines[i]);
+                            writer.WriteLine(contentLine);
                         }
-
-                        // no CRLF after last line -- will crash game ver 0.9.6005 with cfg/Localization.csv and cfg/normal/plants.csv
-                        // TODO check whether this is still necessary
-                        writer.Write(contentLines.Last());
                     }
                 }
                 Console.WriteLine("Write dictionary to game files: {0}", csvIntPath);

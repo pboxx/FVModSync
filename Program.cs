@@ -48,7 +48,6 @@ namespace FVModSync
                 if (modFile.EndsWith(".csv", StringComparison.Ordinal))
                 {
                     // is this a game file we handle
-
                     if (csvRecognisedPaths.Contains(intPath) )
                     {
                         if (!DictHandler.DictExists(intPath))
@@ -57,7 +56,6 @@ namespace FVModSync
                             DictHandler.BackupAndCopy(intPath, ExportFolder);
                         }
                         DictHandler.CopyModdedFileToDict(modFile);
-                        DictHandler.SetDirty(intPath);
 
                         Console.WriteLine("Copy CSV content to dictionary: {0}", modFile);
                     }
@@ -93,7 +91,7 @@ namespace FVModSync
 
         private static void CopyFileFromModDir(string modFile, string targetFile)
         {
-            // how do we deal with existing files here? backup?
+            // TODO decide how we deal with existing files here .. backup them all?
 
             if (File.Exists(targetFile))
             {

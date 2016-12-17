@@ -8,16 +8,25 @@ namespace FVModSync
     public class DictHandler
     {
         private static readonly Dictionary<string, Dictionary<string, string>> libraryOfEverything = new Dictionary<string, Dictionary<string, string>>();
-        private static readonly Dictionary<string, bool> libraryOfModdedBits = new Dictionary<string, bool>();
+        private static readonly Dictionary<string, Dictionary<string, bool>> libraryOfModdedBits = new Dictionary<string, Dictionary<string, bool>>();
 
-        public static void InitAsClean(string csvIntPath)
+        public static void SetDirty(string csvIntPath, string key)
         {
-            libraryOfModdedBits.Add(csvIntPath, false);
-        }
+            Dictionary<string, bool> moddedRecords;
+            if (!libraryOfModdedBits.TryGetValue(csvIntPath, out moddedRecords))
+            {
+                moddedRecords = new Dictionary<string, bool>();
+                libraryOfModdedBits.Add(csvIntPath, moddedRecords);
+            }
 
-        public static void SetDirty(string csvIntPath)
-        {
-            libraryOfModdedBits[csvIntPath] = true;            
+            if (moddedRecords.ContainsKey(key))
+            {
+                moddedRecords[key] = true;
+            }
+            else
+            {
+                moddedRecords.Add(key, true);
+            }
         }
 
         public static void BackupAndCopy(string csvIntPath, string ExportFolder)
@@ -42,13 +51,11 @@ namespace FVModSync
                 // copy from exported files
                 DictHandler.CopyFileToDict(exportedCsvFilePath, csvIntPath);
             }
-            DictHandler.InitAsClean(csvIntPath);
         }
 
         public static void CopyFileToDict(string csvAbsPath, string csvIntPath)
         {
             // TODO throw some error if csvExtFile not found
-            // TODO no need to read files if not modded
             // TODO handle stuff with multiple identical keys (like cfg/dress.csv, LOD.csv; removed from config for now)
 
             using (Stream csvExtFile = File.Open(csvAbsPath, FileMode.Open))
@@ -58,6 +65,8 @@ namespace FVModSync
                 string content = reader.ReadToEnd();
 
                 libraryOfEverything.Add(csvIntPath, new Dictionary<string, string>());
+                libraryOfModdedBits.Add(csvIntPath, new Dictionary<string, bool>());
+
                 libraryOfEverything[csvIntPath].Add("fvs_header", header);
 
                 string[] contentLines = content.Split(new[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
@@ -66,9 +75,9 @@ namespace FVModSync
                 {
                     string key = contentLine.Split(',').First();
                     libraryOfEverything[csvIntPath].Add(key, contentLine);
+                    libraryOfModdedBits[csvIntPath].Add(key, false);
                 }
             }
-            // Console.WriteLine("Copy to dictionary: {0}", csvAbsPath);
         }
 
 
@@ -94,6 +103,17 @@ namespace FVModSync
                     {
                         // overwrite existing line in CSV
                         libraryOfEverything[csvIntPath][key] = contentLine;
+
+                        if (libraryOfModdedBits.ContainsKey(csvIntPath) && libraryOfModdedBits[csvIntPath].ContainsKey(key))
+                            if (libraryOfModdedBits[csvIntPath][key] == true)
+                            {
+                                {
+                                    Console.WriteLine();
+                                    Console.WriteLine("CONFLICT: Entry \"{0}\" from {1} already exists", key, csvModdedFilePath);
+                                    Console.WriteLine();
+                                }
+                            }
+                        DictHandler.SetDirty(csvIntPath, key);
                     }
                     else
                     {

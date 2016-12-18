@@ -14,12 +14,16 @@ namespace FVModSync
     {
         // TODO verbose switch
 
+        private const string Version = "FVModSync v0.1.4beta\nMod installer for Life is Feudal: Forest Village\n(c) pbox 2016\nPublished under the GPLv3 https://www.gnu.org/licenses/gpl-3.0.txt";
         private const string ExportFolder = "FVModSync_exportedFiles";
         private const string ModsSubfolder = "mods";
         private const string LuaIncludeFilePath = @"\scripts\include.lua";
 
         public static void Main(string[] args)
-        {            
+        {
+            Console.WriteLine(Version);
+            Console.WriteLine();
+
             QuickBMSHandler.Unpack(@"..\cfg.pak", ExportFolder);
             QuickBMSHandler.Unpack(@"..\scripts.pak", ExportFolder);
 
@@ -69,7 +73,7 @@ namespace FVModSync
                     LuaHandler.BackupAndCopy(targetFile, ExportFolder + intPath);
                     LuaHandler.CopyFileToIncludeList(modFile);
                 }
-                else // this is some other file
+                else if (!modFile.EndsWith(".txt", StringComparison.OrdinalIgnoreCase)) // this is some other file
                 {
                     Program.CopyFileFromModDir(modFile, targetFile);
                 }
@@ -82,7 +86,7 @@ namespace FVModSync
                 DictHandler.CreateGameFileFromDict(csvIntPath);
             }
 
-            LuaHandler.CreateGameFileFromList(LuaIncludeFilePath);
+            LuaHandler.CreateIncludeFileFromList(LuaIncludeFilePath);
 
             Console.WriteLine(" ");
             Console.WriteLine("Everything seems to be fine. Press Enter to close");

@@ -2,11 +2,16 @@
 
 A tool to install game mods for [Life is Feudal: Forest Village]. FVModSync enables users to organise their mods in a separate folder and copy them over automatically, rather than having to edit files in the game folder by hand. This ought to make it easier for players to use various different mods in parallel, at least until an official tool for this purpose is released. Also, it allows modders to include only the relevant data (i.e. content they have actually changed) in their mods, which improves compatibility between different mods.
 
-v0.1.3beta, for game version **0.9.6008**
+v0.1.4beta, for game version **0.9.6008**
 
 
 Changelog
 --
+v0.1.4beta:
+* Fix: don't write include.lua when it has no content (duh)
+* Ignore .txt files from mods 
+* Console output now includes version info
+
 v0.1.3beta:
 * Fix DictHandler some more to nuke empty lines in CSV from mod files as well
 * Support for adding custom scripts to include.lua
@@ -25,11 +30,12 @@ v0.1.1beta:
 
 Features
 --
-* Copies content from multiple CSV snippets in modded files to a single target file in the game folder
-* Copies entries from multiple mods to scripts/incude.lua (so custom scripts will be recognised)
-* Copies all other modded files to the game folder as they are, keeping the directory structure intact
-* Predictable overriding: mods are sorted alphanumerically, the last entry/file will override any conflicting entries/files
-* Warns users about override conflicts from modded CSV files in the console output
+* Copy content from multiple CSV snippets in modded files to a single target file in the game folder
+* Copy entries from multiple mods to scripts/incude.lua (so custom scripts will be recognised)
+* Copy all other modded files to the game folder as they are, keeping the directory structure intact
+* Predictable overriding: sort mods alphanumerically, the last entry/file will override any conflicting entries/files
+* Warn users about override conflicts from modded CSV files in the console output
+* Ignore .txt/.TXT from mod folders so users can have readme files in there
 
 
 Requirements
@@ -76,11 +82,12 @@ It will put up a console window and tell you what it's doing; that window will r
 
 Notes for modders
 --
-* CVS files should only include records that you have edited -- no unchanged game content
-* Leave the header intact in CVS files; FVModSync will ignore the first line
-* When you have custom scripts, include a /scripts/include.lua listing only your scripts; those entries will be added to (Game Folder)/scripts/include.lua 
+* CSV files should only include records that you have edited -- no unchanged game content
+* Leave the header intact in CSV files; FVModSync will ignore the first line
+* When you have custom scripts, include a /scripts/include.lua snippet listing only your scripts; those entries will be added to (Game Folder)/scripts/include.lua 
 * Mods should be distributed in a folder that is equivalent to the game root folder, using the same directory structure as the game. (Mod Folder)/mods/coolmod/cfg/funky/things.csv will be copied to (Game Folder)/cfg/funky/things.csv, for example.
 * FVModSync sorts all modded files alphanumerically (culture independent) before it starts to copy; the sorting incudes the entire file path from the mod root folder downwards (mod root folder = the one that you distribute, like "pbox_nicemod"). This means the load order is predictable and can be used to deliberately override things (the last mod that loads will override the rest); be aware though that users may change the name of your root folder.
+* FVModSync will ignore any .txt/.TXT files it finds in mod folders, so you can include readme files and the like as .txt
 
 
 Known Issues
@@ -98,7 +105,7 @@ This is because those have multiple entries with identical "names" (fields in th
 
 * When you patch the game, **delete FVModSync_exportedFiles** and let FVModSync regenerate it from the patched game files. Forgetting to do so may lead to missing strings and the like, since it will continue to use those (now outdated) files.
 
-* FVModSync will copy anything that is in (Mods folder)/mods. Far as I can tell, the game just ignores files that are not referenced anywhere, so it shouldn't hurt anything -- still, it is probably better not to dump random files into that folder.
+* FVModSync will copy anything that is in (Mods folder)/mods except txt. Far as I can tell, the game just ignores files that are not referenced anywhere, so it shouldn't hurt anything -- still, it is probably better not to dump random files into that folder.
 
 
 Troubleshooting / Feedback

@@ -52,24 +52,27 @@ namespace FVModSync
             }
         }
 
-        public static void CreateGameFileFromList(string gameFilePath)
+        public static void CreateIncludeFileFromList(string gameFilePath)
         {
-            string targetDir = @".." + Path.GetDirectoryName(gameFilePath);
-            Directory.CreateDirectory(targetDir);
-
-            using (Stream gameFile = File.Open(@".." + gameFilePath, FileMode.Create))
+            if (luaIncludes.Any())
             {
-                using (StreamWriter writer = new StreamWriter(gameFile))
-                {
-                    string[] contentLines = luaIncludes.ToArray();
+                string targetDir = @".." + Path.GetDirectoryName(gameFilePath);
+                Directory.CreateDirectory(targetDir);
 
-                    foreach (string contentLine in contentLines)
+                using (Stream gameFile = File.Open(@".." + gameFilePath, FileMode.Create))
+                {
+                    using (StreamWriter writer = new StreamWriter(gameFile))
                     {
-                        writer.WriteLine(contentLine);
+                        string[] contentLines = luaIncludes.ToArray();
+
+                        foreach (string contentLine in contentLines)
+                        {
+                            writer.WriteLine(contentLine);
+                        }
                     }
                 }
+                Console.WriteLine(@"Write list to game files: {0}", gameFilePath);
             }
-            Console.WriteLine(@"Write list to game files: {0}", gameFilePath);
         }
     }
 }

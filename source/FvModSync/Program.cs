@@ -5,14 +5,15 @@ Published under the GNU General Public License https://www.gnu.org/licenses/gpl-
 
 namespace FVModSync
 {
-    using System;
-    using System.Linq;
-    using System.IO;
-    using FVModSync.Configuration;
-    using FVModSync.Handlers;
-    using FVModSync.Services;
+	using System;
+	using System.IO;
+	using System.Linq;
 
-    /// <summary>
+	using FVModSync.Configuration;
+	using FVModSync.Handlers;
+	using FVModSync.Services;
+
+	/// <summary>
     /// The main program.
     /// </summary>
     public static class Program

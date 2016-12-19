@@ -1,14 +1,14 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FVModSync", "FVModSync.csproj", "{CCFB69C5-756E-4145-896B-A2821AEBC257}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FvModSync.Tests", "..\FvModSync.Tests\FvModSync.Tests.csproj", "{C806505C-D485-4DAB-8454-FCF5945CDD7A}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{3FD9195C-292D-4EE8-8C75-69B73519ADCE}"
 	ProjectSection(SolutionItems) = preProject
 		.nuget\packages.config = .nuget\packages.config
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FVModSync", "FvModSync\FVModSync.csproj", "{CCFB69C5-756E-4145-896B-A2821AEBC257}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FvModSync.Tests", "FvModSync.Tests\FvModSync.Tests.csproj", "{C806505C-D485-4DAB-8454-FCF5945CDD7A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

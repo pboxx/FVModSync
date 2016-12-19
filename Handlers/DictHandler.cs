@@ -1,39 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.IO;
-using System.Text.RegularExpressions;
-
-namespace FVModSync
+﻿namespace FVModSync.Handlers
 {
+    using System;
+    using System.Collections.Generic;
+    using System.IO;
+    using System.Linq;
+    using FVModSync.Extensions;
+
     public class DictHandler
     {
         private static readonly Dictionary<string, Dictionary<string, string>> libraryOfEverything = new Dictionary<string, Dictionary<string, string>>();
         private static readonly Dictionary<string, Dictionary<string, bool>> libraryOfModdedBits = new Dictionary<string, Dictionary<string, bool>>();
 
-        public static void SetDirty(string csvIntPath, string key)
-        {
-            Dictionary<string, bool> moddedRecords;
-            if (!libraryOfModdedBits.TryGetValue(csvIntPath, out moddedRecords))
-            {
-                moddedRecords = new Dictionary<string, bool>();
-                libraryOfModdedBits.Add(csvIntPath, moddedRecords);
-            }
-
-            if (moddedRecords.ContainsKey(key))
-            {
-                moddedRecords[key] = true;
-            }
-            else
-            {
-                moddedRecords.Add(key, true);
-            }
-        }
-
-        public static void BackupAndCopy(string csvIntPath, string ExportFolder)
+        public static void BackupAndCopy(string csvIntPath, string exportFolder)
         {
             string gameCsvFilePath = @".." + csvIntPath;
-            string exportedCsvFilePath = ExportFolder + csvIntPath;
+            string exportedCsvFilePath = exportFolder + csvIntPath;
 
             if (File.Exists(gameCsvFilePath))
             {
@@ -45,19 +26,24 @@ namespace FVModSync
                 Console.WriteLine("File exists: {0} -- create backup on disk", gameCsvFilePath);
 
                 // copy existing game file to internal dictionary
-                DictHandler.CopyFileToDict(gameCsvFilePath, csvIntPath);
+                CopyFileToDict(gameCsvFilePath, csvIntPath);
             }
             else
             {
                 // copy from exported files
-
                 if (!File.Exists(exportedCsvFilePath))
                 {
                     throw new FileNotFoundException("Exported CSV file not found. Try deleting the FVModSync_exportedFiles folder and running the program again.", exportedCsvFilePath);
                 }
-                            
-                DictHandler.CopyFileToDict(exportedCsvFilePath, csvIntPath);
+
+                CopyFileToDict(exportedCsvFilePath, csvIntPath);
             }
+        }
+
+        private static void SetDirty(string csvIntPath, string key)
+        {
+            Dictionary<string, bool> moddedRecords = libraryOfModdedBits.GetOrAdd(csvIntPath, () => new Dictionary<string, bool>());
+            moddedRecords.SetValue(key, true);
         }
 
         public static void CopyFileToDict(string csvAbsPath, string csvIntPath)
@@ -69,7 +55,7 @@ namespace FVModSync
             {
                 throw new FileNotFoundException("File not found", csvAbsPath);
             }
-                            
+
             using (Stream csvExtFile = File.Open(csvAbsPath, FileMode.Open))
             {
                 StreamReader reader = new StreamReader(csvExtFile);
@@ -92,11 +78,9 @@ namespace FVModSync
             }
         }
 
-
         public static void CopyModdedFileToDict(string csvModdedFilePath)
         {
-            int relevantPathStart = csvModdedFilePath.IndexOf('\\', csvModdedFilePath.IndexOf('\\') + 1); // this is obscene
-            string csvIntPath = csvModdedFilePath.Substring(relevantPathStart);
+	        string csvIntPath = csvModdedFilePath.GetRelevantPath();
 
             using (Stream csvStream = File.Open(csvModdedFilePath, FileMode.Open))
             {
@@ -108,48 +92,26 @@ namespace FVModSync
 
                 foreach (string contentLine in contentLines)
                 {
-                    // use first field as dict key
-                    string cleanLine = Regex.Replace(contentLine, @"\t", "");
-                    string key = cleanLine.Split(',').First();
+	                string cleanLine = contentLine.RemoveTabs();
+                    string key = cleanLine.FirstEntryFromRecord();
 
-                    if (libraryOfEverything[csvIntPath].ContainsKey(key))
-                    {
-                        // overwrite existing line in CSV
-                        libraryOfEverything[csvIntPath][key] = cleanLine;
+					if (IsDirty(csvIntPath, key))
+					{
+						Console.WriteLine();
+						Console.WriteLine("CONFLICT: Entry \"{0}\" from {1} already exists", key, csvModdedFilePath);
+						Console.WriteLine();
+					}
 
-                        if (libraryOfModdedBits.ContainsKey(csvIntPath) && libraryOfModdedBits[csvIntPath].ContainsKey(key))
-                            if (libraryOfModdedBits[csvIntPath][key] == true)
-                            {
-                                {
-                                    Console.WriteLine();
-                                    Console.WriteLine("CONFLICT: Entry \"{0}\" from {1} already exists", key, csvModdedFilePath);
-                                    Console.WriteLine();
-                                }
-                            }
-                        DictHandler.SetDirty(csvIntPath, key);
-                    }
-                    else
-                    {
-                        // add new line to CSV
-                        libraryOfEverything[csvIntPath].Add(key, cleanLine);
-                    }
+	                Dictionary<string, string> library = libraryOfEverything.GetOrAdd(csvIntPath, () => new Dictionary<string, string>());
+					library.SetValue(key, cleanLine);
+					DictHandler.SetDirty(csvIntPath, key);
                 }
             }
         }
-      
-        public static bool DictExists(string csvIntPath)
-        {
-            if (libraryOfEverything.ContainsKey(csvIntPath))
-            {
-                return true;
-            }
-            return false;
-        }
-        
 
-        public static void CreateGameFileFromDict(string csvIntPath)
+	    public static void CreateGameFileFromLibrary(string csvIntPath)
         {
-            if (libraryOfModdedBits.ContainsKey(csvIntPath)) 
+            if (RecordExists(csvIntPath))
             {
                 string targetDir = @"..\" + Path.GetDirectoryName(csvIntPath);
                 Directory.CreateDirectory(targetDir);
@@ -160,7 +122,7 @@ namespace FVModSync
                     {
                         string[] contentLines = libraryOfEverything[csvIntPath].Values.ToArray();
 
-                        foreach(string contentLine in contentLines) 
+                        foreach(string contentLine in contentLines)
                         {
                             writer.WriteLine(contentLine);
                         }
@@ -169,5 +131,17 @@ namespace FVModSync
                 Console.WriteLine("Write dictionary to game files: {0}", csvIntPath);
             }
         }
+
+	    private static bool IsDirty(string csvIntPath, string key)
+	    {
+		    return RecordExists(csvIntPath)
+				   && libraryOfModdedBits[csvIntPath].ContainsKey(key)
+				   && libraryOfModdedBits[csvIntPath][key];
+	    }
+
+	    public static bool RecordExists(string csvIntPath)
+	    {
+		    return libraryOfEverything.ContainsKey(csvIntPath);
+	    }
     }
 }

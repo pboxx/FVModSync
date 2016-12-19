@@ -1,14 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.IO;
-using System.Diagnostics;
-
-namespace FVModSync
+namespace FVModSync.Services
 {
-    public class QuickBMSHandler
+    using System;
+    using System.Diagnostics;
+
+    public class QuickBmsUnpacker
     {
-        public static void Unpack(string PakName, string ExportFolderName)
+        public static void Unpack(string pakName, string exportFolderName)
         {
             // unpack .pak in case user doesn't have it unpacked already
             // TODO find less pedestrian way (than just "if dir exists") to determine whether those exports are actually valid
@@ -16,15 +13,14 @@ namespace FVModSync
 
             Process quickbms = new Process();
             quickbms.StartInfo.FileName = @"quickbms\quickbms.exe";
-            quickbms.StartInfo.Arguments = @"-o -q -Y -Q quickbms\life_is_feudal.bms " + PakName + " " + ExportFolderName;
+            quickbms.StartInfo.Arguments = @"-o -q -Y -Q quickbms\life_is_feudal.bms " + pakName + " " + exportFolderName;
             quickbms.StartInfo.UseShellExecute = false;
             quickbms.StartInfo.RedirectStandardInput = true;
             quickbms.Start();
             quickbms.StandardInput.WriteLine("\n");
             quickbms.WaitForExit(1000);
 
-            Console.WriteLine("Export {0} from game files to {1}", PakName, ExportFolderName);
-                      
+            Console.WriteLine("Export {0} from game files to {1}", pakName, exportFolderName);
         }
     }
 }

@@ -3,14 +3,19 @@ Mod installer for Life is Feudal: Forest Village
 Published under the GNU General Public License https://www.gnu.org/licenses/gpl-3.0.txt
 */
 
-using System;
-using System.Linq;
-using System.IO;
-using System.Diagnostics;
-
 namespace FVModSync
 {
-    public class Program
+    using System;
+    using System.Linq;
+    using System.IO;
+    using FVModSync.Configuration;
+    using FVModSync.Handlers;
+    using FVModSync.Services;
+
+    /// <summary>
+    /// The main program.
+    /// </summary>
+    public static class Program
     {
         // TODO verbose switch
 
@@ -19,12 +24,15 @@ namespace FVModSync
         private const string ModsSubfolder = "mods";
         private const string LuaIncludeFilePath = @"\scripts\include.lua";
 
+        /// <summary>
+        /// The main entry point.
+        /// </summary>
         public static void Main(string[] args)
         {
             Console.WriteLine(Version);
 
-            QuickBMSHandler.Unpack(@"..\cfg.pak", ExportFolder);
-            QuickBMSHandler.Unpack(@"..\scripts.pak", ExportFolder);
+            QuickBmsUnpacker.Unpack(@"..\cfg.pak", ExportFolder);
+            QuickBmsUnpacker.Unpack(@"..\scripts.pak", ExportFolder);
 
             if (!Directory.Exists(ModsSubfolder))
             {
@@ -58,7 +66,7 @@ namespace FVModSync
                     // is this a game file we handle
                     if (csvRecognisedPaths.Contains(intPath) )
                     {
-                        if (!DictHandler.DictExists(intPath))
+                        if (!DictHandler.RecordExists(intPath))
                         {
                             // create internal dictionary
                             DictHandler.BackupAndCopy(intPath, ExportFolder);
@@ -87,7 +95,7 @@ namespace FVModSync
 
             foreach (string csvIntPath in csvRecognisedPaths)
             {
-                DictHandler.CreateGameFileFromDict(csvIntPath);
+                DictHandler.CreateGameFileFromLibrary(csvIntPath);
             }
 
             LuaHandler.CreateIncludeFileFromList(LuaIncludeFilePath);

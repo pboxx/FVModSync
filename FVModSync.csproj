@@ -59,12 +59,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ConfigReader.cs" />
-    <Compile Include="DictHandler.cs" />
-    <Compile Include="LuaHandler.cs" />
+    <Compile Include="Configuration\ConfigReader.cs" />
+    <Compile Include="Configuration\Configuration.cs" />
+    <Compile Include="Extensions\DictionaryExtensions.cs" />
+    <Compile Include="Extensions\StringExtensions.cs" />
+    <Compile Include="Handlers\DictHandler.cs" />
+    <Compile Include="Handlers\LuaHandler.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="QuickBMSHandler.cs" />
+    <Compile Include="Services\QuickBmsUnpacker.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -92,6 +95,7 @@
       <Install>false</Install>
     </BootstrapperPackage>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

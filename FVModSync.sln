@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.31101.0
-MinimumVisualStudioVersion = 10.0.40219.1
+# Visual Studio 2012
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FVModSync", "FVModSync.csproj", "{CCFB69C5-756E-4145-896B-A2821AEBC257}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FvModSync.Tests", "..\FvModSync.Tests\FvModSync.Tests.csproj", "{C806505C-D485-4DAB-8454-FCF5945CDD7A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +15,10 @@ Global
 		{CCFB69C5-756E-4145-896B-A2821AEBC257}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CCFB69C5-756E-4145-896B-A2821AEBC257}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CCFB69C5-756E-4145-896B-A2821AEBC257}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C806505C-D485-4DAB-8454-FCF5945CDD7A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C806505C-D485-4DAB-8454-FCF5945CDD7A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C806505C-D485-4DAB-8454-FCF5945CDD7A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C806505C-D485-4DAB-8454-FCF5945CDD7A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -14,7 +14,7 @@ namespace FVModSync
     {
         // TODO verbose switch
 
-        private const string Version = "FVModSync v0.1.4beta\nMod installer for Life is Feudal: Forest Village\n(c) pbox 2016\nPublished under the GPLv3 https://www.gnu.org/licenses/gpl-3.0.txt";
+        private const string Version = "FVModSync v0.2beta\nMod installer for Life is Feudal: Forest Village\n(c) pbox 2016\nPublished under the GPLv3 https://www.gnu.org/licenses/gpl-3.0.txt \n";
         private const string ExportFolder = "FVModSync_exportedFiles";
         private const string ModsSubfolder = "mods";
         private const string LuaIncludeFilePath = @"\scripts\include.lua";
@@ -22,10 +22,14 @@ namespace FVModSync
         public static void Main(string[] args)
         {
             Console.WriteLine(Version);
-            Console.WriteLine();
 
             QuickBMSHandler.Unpack(@"..\cfg.pak", ExportFolder);
             QuickBMSHandler.Unpack(@"..\scripts.pak", ExportFolder);
+
+            if (!Directory.Exists(ModsSubfolder))
+            {
+                throw new DirectoryNotFoundException("Mods subfolder not found. Try putting your mods in a subfolder named \"mods\" and running the program again");
+            }
 
             Console.WriteLine("Searching mods folder: {0} ", ModsSubfolder);
 

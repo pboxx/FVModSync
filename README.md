@@ -7,6 +7,10 @@ v0.1.4beta, for game version **0.9.6008**
 
 Changelog
 --
+v0.2beta:
+* Filter out tabs from modded CSV
+* Output error messages when important files/directories can't be found
+
 v0.1.4beta:
 * Fix: don't write include.lua when it has no content (duh)
 * Ignore .txt files from mods 
@@ -82,7 +86,7 @@ It will put up a console window and tell you what it's doing; that window will r
 
 Notes for modders
 --
-* CSV files should only include records that you have edited -- no unchanged game content
+* Mods should only include data that you have edited -- **no unchanged game content**. Having unchanged game content in your mod means you're prone to override somebody else's mod with the original, thus effectively breaking their mod (or vice versa). 
 * Leave the header intact in CSV files; FVModSync will ignore the first line
 * When you have custom scripts, include a /scripts/include.lua snippet listing only your scripts; those entries will be added to (Game Folder)/scripts/include.lua 
 * Mods should be distributed in a folder that is equivalent to the game root folder, using the same directory structure as the game. (Mod Folder)/mods/coolmod/cfg/funky/things.csv will be copied to (Game Folder)/cfg/funky/things.csv, for example.
@@ -103,7 +107,7 @@ This is because those have multiple entries with identical "names" (fields in th
 
 * FVModSync will create a folder named "FVModSync_exportedFiles" in your game files, which contains various files  from cfg.pak and scripts.pak (two of the game packages). You can delete it if it bothers you, but it'll reappear next time you run the program. If you empty it (but leave the folder intact), FVModSync will currently get a bit stuck, so don't do that. 
 
-* When you patch the game, **delete FVModSync_exportedFiles** and let FVModSync regenerate it from the patched game files. Forgetting to do so may lead to missing strings and the like, since it will continue to use those (now outdated) files.
+* When you patch the game, **delete FVModSync_exportedFiles** and let FVModSync regenerate it from the patched game files (it will do that automatically). Forgetting to do so may lead to missing strings and the like, since it will continue to use those (now outdated) files.
 
 * FVModSync will copy anything that is in (Mods folder)/mods except txt. Far as I can tell, the game just ignores files that are not referenced anywhere, so it shouldn't hurt anything -- still, it is probably better not to dump random files into that folder.
 

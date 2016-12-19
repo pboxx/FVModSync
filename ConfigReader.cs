@@ -1,6 +1,7 @@
 ﻿using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;
+using System.IO;
 
 namespace FVModSync
 {
@@ -10,6 +11,11 @@ namespace FVModSync
 
         public static string[] LoadCsvPaths()
         {
+            if (!File.Exists(ConfigFileName)) 
+            {
+                throw new FileNotFoundException("Configuration file not found", ConfigFileName);
+            }
+             
             XmlSerializer xmlSerializer = new XmlSerializer(typeof(Configuration));
             using (XmlReader xmlReader = XmlReader.Create(ConfigFileName))
             {

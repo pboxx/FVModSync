@@ -25,9 +25,13 @@ namespace FVModSync
                 LuaHandler.CopyFileToIncludeList(gameFilePath);
                 Console.WriteLine("Copy file content to list: {0} ", gameFilePath);
             }
-            else
+            else // copy from exported file (if it exists)
             {
-                // copy from exported file
+                if (!File.Exists(exportedFilePath))
+                {
+                    throw new FileNotFoundException("Exported file not found. Try deleting the FVModSync_exportedFiles folder and running the program again", exportedFilePath);
+                }
+
                 LuaHandler.CopyFileToIncludeList(exportedFilePath);
                 Console.WriteLine("Copy file content to list: {0} ", exportedFilePath);
             }

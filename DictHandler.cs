@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.IO;
+using System.Text.RegularExpressions;
 
 namespace FVModSync
 {
@@ -49,6 +50,12 @@ namespace FVModSync
             else
             {
                 // copy from exported files
+
+                if (!File.Exists(exportedCsvFilePath))
+                {
+                    throw new FileNotFoundException("Exported CSV file not found. Try deleting the FVModSync_exportedFiles folder and running the program again.", exportedCsvFilePath);
+                }
+                            
                 DictHandler.CopyFileToDict(exportedCsvFilePath, csvIntPath);
             }
         }
@@ -58,6 +65,11 @@ namespace FVModSync
             // TODO throw some error if csvExtFile not found
             // TODO handle stuff with multiple identical keys (like cfg/dress.csv, LOD.csv; removed from config for now)
 
+            if (!File.Exists(csvAbsPath))
+            {
+                throw new FileNotFoundException("File not found", csvAbsPath);
+            }
+                            
             using (Stream csvExtFile = File.Open(csvAbsPath, FileMode.Open))
             {
                 StreamReader reader = new StreamReader(csvExtFile);
@@ -97,12 +109,13 @@ namespace FVModSync
                 foreach (string contentLine in contentLines)
                 {
                     // use first field as dict key
-                    string key = contentLine.Split(',').First();
+                    string cleanLine = Regex.Replace(contentLine, @"\t", "");
+                    string key = cleanLine.Split(',').First();
 
                     if (libraryOfEverything[csvIntPath].ContainsKey(key))
                     {
                         // overwrite existing line in CSV
-                        libraryOfEverything[csvIntPath][key] = contentLine;
+                        libraryOfEverything[csvIntPath][key] = cleanLine;
 
                         if (libraryOfModdedBits.ContainsKey(csvIntPath) && libraryOfModdedBits[csvIntPath].ContainsKey(key))
                             if (libraryOfModdedBits[csvIntPath][key] == true)
@@ -118,7 +131,7 @@ namespace FVModSync
                     else
                     {
                         // add new line to CSV
-                        libraryOfEverything[csvIntPath].Add(key, contentLine);
+                        libraryOfEverything[csvIntPath].Add(key, cleanLine);
                     }
                 }
             }

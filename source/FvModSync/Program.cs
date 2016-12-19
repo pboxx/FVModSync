@@ -57,22 +57,20 @@ namespace FVModSync
             foreach (string modFile in modFiles)
             {
                 string[] relevantPathParts = modFile.Split('\\');
-                string relevantPath = string.Join("\\", relevantPathParts.Skip(2).ToArray());
-                string targetFile = @"..\" + relevantPath;
-                string intPath = @"\" + relevantPath;
-
+                string relevantPath = @"\" + string.Join("\\", relevantPathParts.Skip(2).ToArray());
+                string targetFile = @".." + relevantPath;
 
                 if (modFile.EndsWith(".csv", StringComparison.Ordinal))
                 {
                     // is this a game file we handle
-                    if (csvRecognisedPaths.Contains(intPath) )
+                    if (csvRecognisedPaths.Contains(relevantPath) )
                     {
-                        if (!DictHandler.RecordExists(intPath))
+                        if (!LibraryHandler.RecordExists(relevantPath))
                         {
                             // create internal dictionary
-                            DictHandler.BackupAndCopy(intPath, ExportFolder);
+                            LibraryHandler.BackupAndCopy(relevantPath, ExportFolder);
                         }
-                        DictHandler.CopyModdedFileToDict(modFile);
+                        LibraryHandler.CopyModdedFileToDict(modFile);
 
                         Console.WriteLine("Copy CSV content to dictionary: {0}", modFile);
                     }
@@ -81,9 +79,9 @@ namespace FVModSync
                         Program.CopyFileFromModDir(modFile, targetFile);
                     }
                 }
-                else if (intPath == LuaIncludeFilePath)
+                else if (relevantPath == LuaIncludeFilePath)
                 {
-                    LuaHandler.BackupAndCopy(targetFile, ExportFolder + intPath);
+                    LuaHandler.BackupAndCopy(targetFile, ExportFolder + relevantPath);
                     LuaHandler.CopyFileToIncludeList(modFile);
                 }
                 else if (!modFile.EndsWith(".txt", StringComparison.OrdinalIgnoreCase)) // this is some other file
@@ -94,9 +92,9 @@ namespace FVModSync
 
             Console.WriteLine();
 
-            foreach (string csvIntPath in csvRecognisedPaths)
+            foreach (string relevantPath in csvRecognisedPaths)
             {
-                DictHandler.CreateGameFileFromLibrary(csvIntPath);
+                LibraryHandler.CreateGameFileFromLibrary(relevantPath);
             }
 
             LuaHandler.CreateIncludeFileFromList(LuaIncludeFilePath);

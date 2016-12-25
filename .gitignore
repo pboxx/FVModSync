@@ -3,3 +3,4 @@ obj/
 *.suo
 packages/
 *.user
+source/_NCrunch_FVModSync/

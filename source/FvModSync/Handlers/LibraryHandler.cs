@@ -40,16 +40,8 @@
             }
         }
 
-        private static void SetDirty(string relevantPath, string key)
-        {
-            Dictionary<string, bool> moddedRecords = libraryOfModdedBits.GetOrAdd(relevantPath, () => new Dictionary<string, bool>());
-            moddedRecords.SetValue(key, true);
-        }
-
         public static void CopyFileToDict(string absolutePath, string relevantPath)
         {
-            // TODO throw some error if externalFile not found
-            // TODO handle stuff with multiple identical keys (like cfg/dress.csv, LOD.csv; removed from config for now)
 
             if (!File.Exists(absolutePath))
             {
@@ -71,7 +63,8 @@
 
                 foreach (string contentLine in contentLines)
                 {
-                    string key = contentLine.Split(',').First();
+                    string key = GetKey(relevantPath, contentLine);
+
                     libraryOfEverything[relevantPath].Add(key, contentLine);
                     libraryOfModdedBits[relevantPath].Add(key, false);
                 }
@@ -93,21 +86,37 @@
                 foreach (string contentLine in contentLines)
                 {
 	                string cleanLine = contentLine.RemoveTabs();
-                    string key = cleanLine.FirstEntryFromRecord();
+                    string key = GetKey(relevantPath, cleanLine);
 
 					if (IsDirty(relevantPath, key))
 					{
 						Console.WriteLine();
-						Console.WriteLine("CONFLICT: Entry \"{0}\" from {1} already exists", key, csvModdedFilePath);
+						Console.WriteLine("CONFLICT: Record \"{0}\" from {1} already exists", key, csvModdedFilePath);
 						Console.WriteLine();
 					}
 
 	                Dictionary<string, string> library = libraryOfEverything.GetOrAdd(relevantPath, () => new Dictionary<string, string>());
-					library.SetValue(key, cleanLine);
+
+                    //won't work because records can be "1,2"
+                    //if (cleanLine.RecordLength() == library.First().Value.RecordLength())
+                    //{
+                    //    library.SetValue(key, cleanLine);
+                    //    Console.WriteLine("Copy CSV record to dictionary: \"{0}\" from {1}", key, csvModdedFilePath);
+                    //}
+                    //else
+                    //{
+                    //    Console.WriteLine();
+                    //    Console.WriteLine("WARNING: Record \"{0}\" from {1} has a different length -- {3} -- than the original record -- {2} -- and was not copied.", key, csvModdedFilePath, library.First().Value.RecordLength(), cleanLine.RecordLength());
+                    //    Console.WriteLine();
+                    //    Console.WriteLine("cleanLine: {0}", cleanLine);
+                    //    Console.WriteLine("orig_head: {0}", library.First().Value);
+                    //}
+
+                    library.SetValue(key, cleanLine);
 					LibraryHandler.SetDirty(relevantPath, key);
                 }
             }
-        }
+        } 
 
 	    public static void CreateGameFileFromLibrary(string relevantPath)
         {
@@ -132,16 +141,40 @@
             }
         }
 
-	    private static bool IsDirty(string relevantPath, string key)
-	    {
-		    return RecordExists(relevantPath)
-				   && libraryOfModdedBits[relevantPath].ContainsKey(key)
-				   && libraryOfModdedBits[relevantPath][key];
-	    }
-
 	    public static bool RecordExists(string relevantPath)
 	    {
 		    return libraryOfEverything.ContainsKey(relevantPath);
 	    }
+
+        private static string GetKey(string relevantPath, string inputLine)
+        {
+            string key;
+
+            // TODO handle other stuff with multiple identical keys (like LOD.csv etc; removed from config for now)
+
+            if (relevantPath.EndsWith("dress.csv"))
+            {
+                string[] keycombo = inputLine.Split(',').Take(2).ToArray();
+                key = String.Join("+", keycombo);
+            }
+            else
+            {
+                key = inputLine.Split(',').First();
+            }
+            return key;
+        }
+
+        private static bool IsDirty(string relevantPath, string key)
+        {
+            return RecordExists(relevantPath)
+                   && libraryOfModdedBits[relevantPath].ContainsKey(key)
+                   && libraryOfModdedBits[relevantPath][key];
+        }
+
+        private static void SetDirty(string relevantPath, string key)
+        {
+            Dictionary<string, bool> moddedRecords = libraryOfModdedBits.GetOrAdd(relevantPath, () => new Dictionary<string, bool>());
+            moddedRecords.SetValue(key, true);
+        }
     }
 }

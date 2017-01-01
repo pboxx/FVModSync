@@ -14,5 +14,14 @@
 
 			Assert.AreEqual(expected, actual);
 		}
+
+        [TestCase("a,b", 2)]
+        [TestCase("a,b,c,d", 4)]
+        public void RecordLengthShouldReturnNumberOfParts(string record, int expectedLength)
+        {
+            int actualLength = record.RecordLength();
+
+            Assert.AreEqual(expectedLength, actualLength);
+        }
 	}
 }

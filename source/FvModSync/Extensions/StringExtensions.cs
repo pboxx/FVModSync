@@ -24,6 +24,14 @@
 			return record.Split(',').First();
 		}
 
+        /// <summary>
+        /// Gets the number of entries of a comma-separated value.
+        /// </summary>
+        public static int RecordLength(this string record)
+        {
+            return record.Split(',').Length;
+        }
+
 		/// <summary>
 		/// Drops the first two path parts from the specified <paramref name="path"/>
 		/// and returns the remaining relative path.

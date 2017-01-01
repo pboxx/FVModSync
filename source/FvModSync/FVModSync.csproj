@@ -63,7 +63,7 @@
     <Compile Include="Configuration\Configuration.cs" />
     <Compile Include="Extensions\DictionaryExtensions.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
-    <Compile Include="Handlers\DictHandler.cs" />
+    <Compile Include="Handlers\LibraryHandler.cs" />
     <Compile Include="Handlers\LuaHandler.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

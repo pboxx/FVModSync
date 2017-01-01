@@ -2,7 +2,7 @@
 
 A tool to install game mods for [Life is Feudal: Forest Village]. FVModSync enables users to organise their mods in a separate folder and copy them over automatically, rather than having to edit files in the game folder by hand. This ought to make it easier for players to use various different mods in parallel, at least until an official tool for this purpose is released. Also, it allows modders to include only the relevant data (i.e. content they have actually changed) in their mods, which improves compatibility between different mods.
 
-v0.1.4beta, for game version **0.9.6008**
+v0.2beta, for game version **0.9.6008**..**0.9.6034**
 
 
 Changelog
@@ -10,6 +10,9 @@ Changelog
 v0.2beta:
 * Filter out tabs from modded CSV
 * Output error messages when important files/directories can't be found
+* Throw exception when quickbms fails to run
+* Add support for cfg/dress.csv (using first + second field as key)
+* Internal cleanup
 
 v0.1.4beta:
 * Fix: don't write include.lua when it has no content (duh)
@@ -48,7 +51,7 @@ Requirements
 
 2. You need to create a Mods folder in your game files manually (ought to be Program Files/Steam/steamapps/common/Life is Feudal Forest Village), top level. The actual name of that folder is irrelevant, it's only referred to as "Mods folder" here for sake of simplicity.
 
-3. You need to download and unzip [quickbms] in your Mods folder, top level. The "life_is_feudal.bms" script also needs to be in the quickbms folder. [1]
+3. You need to download and unzip [quickbms] in your Mods folder, top level. The "life_is_feudal.bms" script also needs to be in the quickbms folder; make sure the file extension is actually .bms and not .txt. [1]
 
 4. Mods that you want to manage with FVModSync need to be installed in Mods Folder/mods, and maintain the same directory structure and filenames that the game is using. For example, if I want to include a snippet of /cfg/normal/houses.csv with my mod, it needs to be in (Mods folder)/mods/pbox_nicemod/cfg/normal/houses.csv. [2] 
 
@@ -98,7 +101,6 @@ Known Issues
 --
 * CSV exceptions: Right now this does not handle the following files:
 
-  * \cfg\dress.csv
   * \cfg\LOD.csv
   * \cfg\names.csv
   * \cfg\tips.csv

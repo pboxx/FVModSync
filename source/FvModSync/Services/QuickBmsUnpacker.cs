@@ -11,6 +11,8 @@ namespace FVModSync.Services
             // TODO find less pedestrian way (than just "if dir exists") to determine whether those exports are actually valid
             // TODO error catching if something goes wrong here (like cry if pak not found, quickbms missing, life_is_feudal.bms missing etc)
 
+            Console.WriteLine("Exporting {0} from game files to {1} ... ", pakName, exportFolderName);
+
             Process quickbms = new Process();
             quickbms.StartInfo.FileName = @"quickbms\quickbms.exe";
             quickbms.StartInfo.Arguments = @"-o -q -Y -Q quickbms\life_is_feudal.bms " + pakName + " " + exportFolderName;
@@ -20,7 +22,10 @@ namespace FVModSync.Services
             quickbms.StandardInput.WriteLine("\n");
             quickbms.WaitForExit(1000);
 
-            Console.WriteLine("Export {0} from game files to {1}", pakName, exportFolderName);
+            if (quickbms.ExitCode != 0)
+            {
+                throw new InvalidOperationException(string.Format("quickbms exited with exit code {0} -- please check that it is set up correctly.", quickbms.ExitCode));
+            }
         }
     }
 }

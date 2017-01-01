@@ -12,6 +12,7 @@ namespace FVModSync
 	using FVModSync.Configuration;
 	using FVModSync.Handlers;
 	using FVModSync.Services;
+    using System.Diagnostics;
 
 	/// <summary>
     /// The main program.
@@ -30,77 +31,84 @@ namespace FVModSync
         /// </summary>
         public static void Main(string[] args)
         {
-            Console.WriteLine(Version);
-
-            QuickBmsUnpacker.Unpack(@"..\cfg.pak", ExportFolder);
-            QuickBmsUnpacker.Unpack(@"..\scripts.pak", ExportFolder);
-
-            if (!Directory.Exists(ModsSubfolder))
+            try
             {
-                throw new DirectoryNotFoundException("Mods subfolder not found. Try putting your mods in a subfolder named \"mods\" and running the program again");
-            }
+                Console.WriteLine(Version);
+                QuickBmsUnpacker.Unpack(@"..\cfg.pak", ExportFolder);
+                QuickBmsUnpacker.Unpack(@"..\scripts.pak", ExportFolder);
 
-            Console.WriteLine("Searching mods folder: {0} ", ModsSubfolder);
-
-            string[] csvRecognisedPaths = ConfigReader.LoadCsvPaths();
-            string[] modFiles = Directory.GetFiles(ModsSubfolder, "*", SearchOption.AllDirectories);
-
-            Array.Sort(modFiles, StringComparer.InvariantCulture);
-            Console.WriteLine("Modded files found:");
-
-            foreach (string modFile in modFiles)
-            {
-                Console.WriteLine(modFile);
-            }
-            Console.WriteLine();
-
-            foreach (string modFile in modFiles)
-            {
-                string[] relevantPathParts = modFile.Split('\\');
-                string relevantPath = @"\" + string.Join("\\", relevantPathParts.Skip(2).ToArray());
-                string targetFile = @".." + relevantPath;
-
-                if (modFile.EndsWith(".csv", StringComparison.Ordinal))
+                if (!Directory.Exists(ModsSubfolder))
                 {
-                    // is this a game file we handle
-                    if (csvRecognisedPaths.Contains(relevantPath) )
-                    {
-                        if (!LibraryHandler.RecordExists(relevantPath))
-                        {
-                            // create internal dictionary
-                            LibraryHandler.BackupAndCopy(relevantPath, ExportFolder);
-                        }
-                        LibraryHandler.CopyModdedFileToDict(modFile);
+                    throw new DirectoryNotFoundException("Mods subfolder not found. Try putting your mods in a subfolder named \"mods\" and running the program again");
+                }
 
-                        Console.WriteLine("Copy CSV content to dictionary: {0}", modFile);
+                Console.WriteLine("Searching mods folder: {0} ", ModsSubfolder);
+
+                string[] csvRecognisedPaths = ConfigReader.LoadCsvPaths();
+                string[] modFiles = Directory.GetFiles(ModsSubfolder, "*", SearchOption.AllDirectories);
+
+                Array.Sort(modFiles, StringComparer.InvariantCulture);
+                Console.WriteLine("Modded files found:");
+
+                foreach (string modFile in modFiles)
+                {
+                    Console.WriteLine(modFile);
+                }
+                Console.WriteLine();
+
+                foreach (string modFile in modFiles)
+                {
+                    string[] relevantPathParts = modFile.Split('\\');
+                    string relevantPath = @"\" + string.Join("\\", relevantPathParts.Skip(2).ToArray());
+                    string targetFile = @".." + relevantPath;
+
+                    if (modFile.EndsWith(".csv", StringComparison.Ordinal))
+                    {
+                        // is this a game file we handle
+                        if (csvRecognisedPaths.Contains(relevantPath))
+                        {
+                            if (!LibraryHandler.RecordExists(relevantPath))
+                            {
+                                // create internal dictionary
+                                LibraryHandler.BackupAndCopy(relevantPath, ExportFolder);
+                            }
+                            LibraryHandler.CopyModdedFileToDict(modFile);
+
+                            Console.WriteLine("Copy CSV content to dictionary: {0}", modFile);
+                        }
+                        else // this is a custom csv
+                        {
+                            Program.CopyFileFromModDir(modFile, targetFile);
+                        }
                     }
-                    else // this is a custom csv
+                    else if (relevantPath == LuaIncludeFilePath)
+                    {
+                        LuaHandler.BackupAndCopy(targetFile, ExportFolder + relevantPath);
+                        LuaHandler.CopyFileToIncludeList(modFile);
+                    }
+                    else if (!modFile.EndsWith(".txt", StringComparison.OrdinalIgnoreCase)) // this is some other file
                     {
                         Program.CopyFileFromModDir(modFile, targetFile);
                     }
                 }
-                else if (relevantPath == LuaIncludeFilePath)
+
+                Console.WriteLine();
+
+                foreach (string relevantPath in csvRecognisedPaths)
                 {
-                    LuaHandler.BackupAndCopy(targetFile, ExportFolder + relevantPath);
-                    LuaHandler.CopyFileToIncludeList(modFile);
+                    LibraryHandler.CreateGameFileFromLibrary(relevantPath);
                 }
-                else if (!modFile.EndsWith(".txt", StringComparison.OrdinalIgnoreCase)) // this is some other file
-                {
-                    Program.CopyFileFromModDir(modFile, targetFile);
-                }
+
+                LuaHandler.CreateIncludeFileFromList(LuaIncludeFilePath);
+
+                Console.WriteLine(" ");
+                Console.WriteLine("Everything seems to be fine. Press Enter to close");
             }
-
-            Console.WriteLine();
-
-            foreach (string relevantPath in csvRecognisedPaths)
+            catch (Exception e)
             {
-                LibraryHandler.CreateGameFileFromLibrary(relevantPath);
+                Console.Error.WriteLine("Error:");
+                Console.Error.WriteLine("{0}: {1}\n{2}", e.GetType().Name, e.Message, e.StackTrace);
             }
-
-            LuaHandler.CreateIncludeFileFromList(LuaIncludeFilePath);
-
-            Console.WriteLine(" ");
-            Console.WriteLine("Everything seems to be fine. Press Enter to close");
             Console.ReadLine();
         }
 

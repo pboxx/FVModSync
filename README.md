@@ -53,7 +53,7 @@ Requirements
 
 3. You need to download and unzip [quickbms] in your Mods folder, top level. The "life_is_feudal.bms" script also needs to be in the quickbms folder; make sure the file extension is actually .bms and not .txt. [1]
 
-4. Mods that you want to manage with FVModSync need to be installed in Mods Folder/mods, and maintain the same directory structure and filenames that the game is using. For example, if I want to include a snippet of /cfg/normal/houses.csv with my mod, it needs to be in (Mods folder)/mods/pbox_nicemod/cfg/normal/houses.csv. [2] 
+4. Mods that you want to manage with FVModSync need to be installed in Mods Folder/mods, and maintain the same directory structure and filenames that the game is using, so don't change anything inside the mod folders. [2] 
 
 
 [1] quickbms is needed to export the unmodded CSV data from the game .pak files, to "fill in the blanks" so to speak (i.e. when you have mods that only modify three lines of a CSV, this unmodified data is copied over for the rest so we don't end up with incomplete files).
@@ -117,6 +117,8 @@ This is because those have multiple entries with identical "names" (fields in th
 Troubleshooting / Feedback
 --
 * You can post in [Issues] or in the [Feedback thread] (Forest Village modding group on Steam).
+
+* When FVModSync seems unable to export the .pak files (or rather, unable to get quickbms to export them: this will result in an exception telling you "quickbms exited with code 3 -- please check that it is set up correctly"), check that life_is_feudal.bms is actually named life_is_feudal.bms and not life_is_feudal.bms**.txt**.
 
 * If you run into issues, the text from the console window may be helpful to figure out the problem: you can copy it with Edit > Select All; Edit > Copy via the context menu (rightclick) on the title bar. The game dumps a log in (Game Folder)/Log.log that is also often quite helpful.
 

@@ -24,7 +24,7 @@ namespace FVModSync.Services
 
             if (quickbms.ExitCode != 0)
             {
-                throw new InvalidOperationException(string.Format("quickbms exited with exit code {0} -- please check that it is set up correctly.", quickbms.ExitCode));
+                throw new InvalidOperationException(string.Format("quickbms exited with code {0} -- please check that it is set up correctly.", quickbms.ExitCode));
             }
         }
     }

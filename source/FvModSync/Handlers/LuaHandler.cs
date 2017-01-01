@@ -1,13 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.IO;
-
-namespace FVModSync
+﻿namespace FVModSync.Handlers
 {
+    using System;
+    using System.Collections.Generic;
+    using System.IO;
+    using System.Linq;
+
     public class LuaHandler
     {
-        // private static readonly string[] luaIncludes;
         private static readonly List<string> luaIncludes = new List<string>();
 
         public static void BackupAndCopy(string gameFilePath, string exportedFilePath)

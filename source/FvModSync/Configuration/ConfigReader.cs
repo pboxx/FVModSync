@@ -1,21 +1,20 @@
-﻿using System.Xml;
-using System.Xml.Schema;
-using System.Xml.Serialization;
-using System.IO;
-
-namespace FVModSync
+﻿namespace FVModSync.Configuration
 {
+    using System.IO;
+    using System.Xml;
+    using System.Xml.Serialization;
+
     public class ConfigReader
     {
         private const string ConfigFileName = "FVModSync.cfg";
 
         public static string[] LoadCsvPaths()
         {
-            if (!File.Exists(ConfigFileName)) 
+            if (!File.Exists(ConfigFileName))
             {
                 throw new FileNotFoundException("Configuration file not found", ConfigFileName);
             }
-             
+
             XmlSerializer xmlSerializer = new XmlSerializer(typeof(Configuration));
             using (XmlReader xmlReader = XmlReader.Create(ConfigFileName))
             {
@@ -25,17 +24,6 @@ namespace FVModSync
 
                 return configuration.FileLocations;
             }
-        }
-
-        [XmlRoot(ElementName = "configuration")]
-        public sealed class Configuration
-        {
-            [XmlElement(ElementName = "gameVersion", Form = XmlSchemaForm.Unqualified)]
-            public string GameVersion { get; set; }
-
-            [XmlArray(ElementName = "fileLocations", Form = XmlSchemaForm.Unqualified)]
-            [XmlArrayItem("fileLocation", typeof(string))]
-            public string[] FileLocations { get; set; }
         }
     }
 }

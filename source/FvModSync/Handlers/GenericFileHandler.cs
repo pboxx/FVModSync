@@ -17,7 +17,7 @@
                 File.Delete(backupFilePath);
                 File.Copy(filePath, backupFilePath);
 
-                Console.WriteLine("File exists: {0} -- create backup on disk", filePath);
+                Console.WriteLine("File exists -- create backup: {0}", filePath);
             }
         }
 
@@ -26,7 +26,6 @@
             if (Directory.Exists(Config.ModsSubfolderName))
             {
                 Console.WriteLine();
-                Console.WriteLine("Searching mods folder: {0} ...", Config.ModsSubfolderName);
 
                 string[] modFiles = Directory.GetFiles(Config.ModsSubfolderName, "*", SearchOption.AllDirectories);
 

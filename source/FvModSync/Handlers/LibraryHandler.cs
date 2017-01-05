@@ -12,44 +12,30 @@
         private static readonly Dictionary<string, Dictionary<string, string>> libraryOfEverything = new Dictionary<string, Dictionary<string, string>>();
         private static readonly Dictionary<string, Dictionary<string, bool>> libraryOfModdedBits = new Dictionary<string, Dictionary<string, bool>>();
 
-        public static void BackupAndCopy(string internalName)
+        public static void InitTable(string internalName)
         {
-            string gameFilePath = Config.GameFilePrefix + internalName;
             string exportedFilePath = Config.ExportFolderName + internalName;
+            string gameFilePath = Config.GameFilePrefix + internalName;
 
             if (File.Exists(gameFilePath))
             {
-                string backupFilePath = gameFilePath + Config.GameFileBackupSuffix;
-
-                File.Delete(backupFilePath);
-                File.Copy(gameFilePath, backupFilePath);
-
-                Console.WriteLine("File exists: {0} -- create backup on disk", gameFilePath);
-
-                // copy existing game file to internal dictionary
-                CopyFileToDict(gameFilePath, internalName);
+                Console.WriteLine("Init table {0} from game files ...", internalName);
+                CopyFileToNewDict(gameFilePath, internalName);
             }
             else
             {
-                // copy from exported files
                 if (!File.Exists(exportedFilePath))
                 {
                     throw new FileNotFoundException("Exported CSV file not found. Try deleting the FVModSync_exportedFiles folder and running the program again.", exportedFilePath);
                 }
-
-                CopyFileToDict(exportedFilePath, internalName);
+                Console.WriteLine("Init table {0} from exported files ...", internalName);
+                CopyFileToNewDict(exportedFilePath, internalName);
             }
         }
 
-        public static void CopyFileToDict(string absolutePath, string internalName)
+        public static void CopyFileToNewDict(string sourceFilePath, string internalName)
         {
-
-            if (!File.Exists(absolutePath))
-            {
-                throw new FileNotFoundException("File not found", absolutePath);
-            }
-
-            using (Stream externalFile = File.Open(absolutePath, FileMode.Open))
+            using (Stream externalFile = File.Open(sourceFilePath, FileMode.Open))
             {
                 StreamReader reader = new StreamReader(externalFile);
                 string header = reader.ReadLine();
@@ -70,11 +56,18 @@
                     libraryOfModdedBits[internalName].Add(key, false);
                 }
             }
+            Console.WriteLine("CopyFileToNewDict {0}: content from {1}", internalName, sourceFilePath);
         }
+
 
         public static void CopyModdedFileToDict(string csvModdedFilePath)
         {
 	        string internalName = csvModdedFilePath.GetInternalName();
+
+            if (!TableExists(internalName))
+            {
+                InitTable(internalName);
+            }
 
             using (Stream csvStream = File.Open(csvModdedFilePath, FileMode.Open))
             {
@@ -102,12 +95,17 @@
 					LibraryHandler.SetDirty(internalName, key);
                 }
             }
-        } 
+        }
 
-	    public static void CreateGameFileFromLibrary(string internalName)
+        public static void CreateGameFilesFromLibrary()
         {
-            if (RecordExists(internalName))
+            string[] internalNames = libraryOfEverything.Keys.ToArray();
+
+            foreach (string internalName in internalNames) 
             {
+                string gameFilePath = Config.GameFilePrefix + internalName;
+                GenericFileHandler.BackupIfExists(gameFilePath);
+
                 string targetDir = Config.GameFilePrefix + @"\" + Path.GetDirectoryName(internalName);
                 Directory.CreateDirectory(targetDir);
 
@@ -117,7 +115,7 @@
                     {
                         string[] contentLines = libraryOfEverything[internalName].Values.ToArray();
 
-                        foreach(string contentLine in contentLines)
+                        foreach (string contentLine in contentLines)
                         {
                             writer.WriteLine(contentLine);
                         }
@@ -127,7 +125,7 @@
             }
         }
 
-	    public static bool RecordExists(string internalName)
+        private static bool TableExists(string internalName)
 	    {
 		    return libraryOfEverything.ContainsKey(internalName);
 	    }
@@ -152,7 +150,7 @@
 
         private static bool IsDirty(string internalName, string key)
         {
-            return RecordExists(internalName)
+            return TableExists(internalName)
                    && libraryOfModdedBits[internalName].ContainsKey(key)
                    && libraryOfModdedBits[internalName][key];
         }

@@ -5,17 +5,14 @@ Published under the GNU General Public License https://www.gnu.org/licenses/gpl-
 
 namespace FVModSync
 {
-	using System;
-	using System.IO;
-	using System.Linq;
-
-	using FVModSync.Configuration;
+    using FVModSync.Configuration;
     using FVModSync.Extensions;
-	using FVModSync.Handlers;
-	using FVModSync.Services;
-    using System.Diagnostics;
+    using FVModSync.Handlers;
+    using FVModSync.Services;
+    using System;
+    using System.Linq;
 
-	/// <summary>
+    /// <summary>
     /// The main program.
     /// </summary>
     public static class Program
@@ -32,6 +29,7 @@ namespace FVModSync
             try
             {
                 string[] pakNames = { "cfg", "scripts" };
+
                 QuickBmsUnpacker.Unpack(pakNames);
 
                 string[] csvRecognisedPaths = ConfigReader.LoadCsvPaths();
@@ -47,13 +45,7 @@ namespace FVModSync
                         // is this a game file we handle
                         if (csvRecognisedPaths.Contains(internalName))
                         {
-                            if (!LibraryHandler.RecordExists(internalName))
-                            {
-                                // create internal dictionary
-                                LibraryHandler.BackupAndCopy(internalName);
-                            }
                             LibraryHandler.CopyModdedFileToDict(modFile);
-
                             Console.WriteLine("Copy CSV content to dictionary: {0}", modFile);
                         }
                         else // this is a custom csv
@@ -63,8 +55,7 @@ namespace FVModSync
                     }
                     else if (internalName == Config.InternalLuaIncludePath)
                     {
-                        GenericFileHandler.BackupIfExists(gameFilePath);
-                        ListHandler.AddToList(internalName, modFile);
+                        ListHandler.AddToList(modFile, internalName);
                     }
                     else if (!modFile.EndsWith(".txt", StringComparison.OrdinalIgnoreCase)) // this is some other file
                     {
@@ -74,10 +65,12 @@ namespace FVModSync
 
                 Console.WriteLine();
 
-                foreach (string relevantPath in csvRecognisedPaths)
-                {
-                    LibraryHandler.CreateGameFileFromLibrary(relevantPath);
-                }
+                //foreach (string relevantPath in csvRecognisedPaths)
+                //{
+                //    LibraryHandler.CreateGameFileFromLibrary(relevantPath);
+                //}
+
+                LibraryHandler.CreateGameFilesFromLibrary();
 
                 ListHandler.CreateFileFromList(Config.InternalLuaIncludePath);
 

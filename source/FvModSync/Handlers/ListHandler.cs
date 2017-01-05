@@ -18,7 +18,7 @@
             if (File.Exists(gameFilePath))
             {
                 Console.WriteLine("Init list {0} from game files ...", internalName);
-                ListHandler.AddToList(internalName, gameFilePath);
+                AddToList(gameFilePath, internalName);
             }
             else
             {
@@ -27,13 +27,12 @@
                     throw new FileNotFoundException("Exported file {0} not found. Try deleting the FVModSync_exportedFiles folder and running the program again", exportedFilePath);
                 }
                 Console.WriteLine("Init list {0} from exported files ...", internalName);
-                ListHandler.AddToList(internalName, exportedFilePath);
+                AddToList(exportedFilePath, internalName);
             }
         }
 
-        public static void AddToList(string internalName, string sourceFile)
+        public static void AddToList(string sourceFilePath, string internalName)
         {   
-            Console.WriteLine("Add to list {0}: file content from {1} ...", internalName, sourceFile);
 
             if (!lists.ContainsKey(internalName)) 
             {
@@ -43,7 +42,7 @@
 
             List<string> list = lists[internalName];
 
-            using (Stream stream = File.Open(sourceFile, FileMode.Open))
+            using (Stream stream = File.Open(sourceFilePath, FileMode.Open))
             {
                 StreamReader reader = new StreamReader(stream);
 
@@ -58,6 +57,7 @@
                     }
                 }
             }
+            Console.WriteLine("Add to list {0}: content from {1}", internalName, sourceFilePath);
         }
 
         public static void CreateFileFromList(string internalName)
@@ -68,12 +68,15 @@
                 
                 if (list.Any()) // dont write empty lists
                 {
+                    string gameFilePath = Config.GameFilePrefix + internalName;
+                    GenericFileHandler.BackupIfExists(gameFilePath);
+
                     string targetDir = Config.GameFilePrefix + Path.GetDirectoryName(internalName);
                     Directory.CreateDirectory(targetDir);
 
-                    using (Stream gameFile = File.Open(Config.GameFilePrefix + internalName, FileMode.Create))
+                    using (Stream gameFileStream = File.Open(gameFilePath, FileMode.Create))
                     {
-                        using (StreamWriter writer = new StreamWriter(gameFile))
+                        using (StreamWriter writer = new StreamWriter(gameFileStream))
                         {
                             string[] contentLines = list.ToArray();
 

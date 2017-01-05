@@ -17,7 +17,7 @@
                 File.Delete(backupFilePath);
                 File.Copy(filePath, backupFilePath);
 
-                Console.WriteLine("File exists -- create backup: {0}", filePath);
+                // Console.WriteLine("File exists -- create backup: {0}", filePath);
             }
         }
 
@@ -57,6 +57,7 @@
             {
                 File.Delete(targetFile);
                 File.Copy(modFile, targetFile);
+                Console.WriteLine();
                 Console.WriteLine("Copy file {0} to {1} (overwrite)", modFile, targetFile);
             }
             else
@@ -65,6 +66,7 @@
 
                 Directory.CreateDirectory(targetDir);
                 File.Copy(modFile, targetFile);
+                Console.WriteLine();
                 Console.WriteLine("Copy file {0} to {1} (new)", modFile, targetFile);
             }
         }

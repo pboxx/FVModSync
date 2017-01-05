@@ -1,9 +1,9 @@
 namespace FVModSync.Services
 {
+    using FVModSync.Configuration;
     using System;
     using System.Diagnostics;
     using System.IO;
-    using FVModSync.Configuration;
 
     public class QuickBmsUnpacker
     {
@@ -11,9 +11,7 @@ namespace FVModSync.Services
         {
            foreach (string pakName in pakNames)
             {
-                // unpack .pak in case user doesn't have it unpacked already
-                // TODO find less pedestrian way (than just "if dir exists") to determine whether those exports are actually valid
-                // TODO error catching if something goes wrong here (like cry if pak not found, quickbms missing, life_is_feudal.bms missing etc)
+                // TODO find less pedestrian way (than just "if dir exists") to determine whether exports are valid
 
                 string pakPath = Config.GameFilePrefix + @"\" + pakName + ".pak";
                 string pakExportDir = Config.ExportFolderName + @"\" + pakName;
@@ -41,6 +39,7 @@ namespace FVModSync.Services
                     Console.WriteLine("Export directory {0} exists ", pakExportDir);
                 }
             }
+            Console.WriteLine();
         }
     }
 }

@@ -1,11 +1,11 @@
 ﻿namespace FVModSync.Handlers
 {
+    using FVModSync.Configuration;
+    using FVModSync.Extensions;
     using System;
     using System.Collections.Generic;
     using System.IO;
     using System.Linq;
-    using FVModSync.Extensions;
-    using FVModSync.Configuration;
 
     public class LibraryHandler
     {
@@ -19,8 +19,9 @@
 
             if (File.Exists(gameFilePath))
             {
-                Console.WriteLine("Init table {0} from game files ...", internalName);
-                CopyFileToNewDict(gameFilePath, internalName);
+                Console.WriteLine();
+                Console.WriteLine("Init {0} from game files ...", internalName);
+                CopyFileToDict(gameFilePath, internalName);
             }
             else
             {
@@ -28,53 +29,33 @@
                 {
                     throw new FileNotFoundException("Exported CSV file not found. Try deleting the FVModSync_exportedFiles folder and running the program again.", exportedFilePath);
                 }
-                Console.WriteLine("Init table {0} from exported files ...", internalName);
-                CopyFileToNewDict(exportedFilePath, internalName);
+                Console.WriteLine();
+                Console.WriteLine("Init {0} from exported files ...", internalName);
+                CopyFileToDict(exportedFilePath, internalName);
             }
         }
 
-        public static void CopyFileToNewDict(string sourceFilePath, string internalName)
+        public static void CopyFileToDict(string sourceFilePath, string internalName)
         {
-            using (Stream externalFile = File.Open(sourceFilePath, FileMode.Open))
-            {
-                StreamReader reader = new StreamReader(externalFile);
-                string header = reader.ReadLine();
-                string content = reader.ReadToEnd();
-
-                libraryOfEverything.Add(internalName, new Dictionary<string, string>());
-                libraryOfModdedBits.Add(internalName, new Dictionary<string, bool>());
-
-                libraryOfEverything[internalName].Add("fvs_header", header);
-
-                string[] contentLines = content.Split(new[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
-
-                foreach (string contentLine in contentLines)
-                {
-                    string key = GetKey(internalName, contentLine);
-
-                    libraryOfEverything[internalName].Add(key, contentLine);
-                    libraryOfModdedBits[internalName].Add(key, false);
-                }
-            }
-            Console.WriteLine("CopyFileToNewDict {0}: content from {1}", internalName, sourceFilePath);
-        }
-
-
-        public static void CopyModdedFileToDict(string csvModdedFilePath)
-        {
-	        string internalName = csvModdedFilePath.GetInternalName();
-
             if (!TableExists(internalName))
             {
+                libraryOfEverything.Add(internalName, new Dictionary<string, string>());
+                libraryOfModdedBits.Add(internalName, new Dictionary<string, bool>());
                 InitTable(internalName);
             }
+            Console.WriteLine("Add to {0}: content from {1} ...", internalName, sourceFilePath);
 
-            using (Stream csvStream = File.Open(csvModdedFilePath, FileMode.Open))
+            using (Stream csvStream = File.Open(sourceFilePath, FileMode.Open))
             {
                 StreamReader reader = new StreamReader(csvStream);
-                reader.ReadLine(); // skip the header
-
+                string header = reader.ReadLine();
                 string content = reader.ReadToEnd();
+                
+                if (!libraryOfEverything[internalName].TryGetValue("fvs_header", out header))
+                {
+                    libraryOfEverything[internalName].Add("fvs_header", header);
+                }
+
                 string[] contentLines = content.Split(new[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
 
                 foreach (string contentLine in contentLines)
@@ -85,17 +66,22 @@
 					if (IsDirty(internalName, key))
 					{
 						Console.WriteLine();
-						Console.WriteLine("CONFLICT: Record \"{0}\" from {1} already exists", key, csvModdedFilePath);
-						Console.WriteLine();
+						Console.WriteLine("CONFLICT: Record \"{0}\" already exists", key);
 					}
 
-	                Dictionary<string, string> library = libraryOfEverything.GetOrAdd(internalName, () => new Dictionary<string, string>());
+	                Dictionary<string, string> record = libraryOfEverything.GetOrAdd(internalName, () => new Dictionary<string, string>());
 
-                    library.SetValue(key, cleanLine);
-					LibraryHandler.SetDirty(internalName, key);
+                    record.SetValue(key, cleanLine);
+
+                    if (sourceFilePath.StartsWith(Config.ModsSubfolderName))
+                    {
+                        LibraryHandler.SetDirty(internalName, key);
+                    }
                 }
             }
         }
+
+
 
         public static void CreateGameFilesFromLibrary()
         {

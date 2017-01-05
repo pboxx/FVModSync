@@ -1,10 +1,10 @@
 ﻿namespace FVModSync.Handlers
 {
+    using FVModSync.Configuration;
     using System;
     using System.Collections.Generic;
     using System.IO;
     using System.Linq;
-    using FVModSync.Configuration;
 
     public class ListHandler
     {
@@ -17,6 +17,7 @@
 
             if (File.Exists(gameFilePath))
             {
+                Console.WriteLine();
                 Console.WriteLine("Init list {0} from game files ...", internalName);
                 AddToList(gameFilePath, internalName);
             }
@@ -26,6 +27,7 @@
                 {
                     throw new FileNotFoundException("Exported file {0} not found. Try deleting the FVModSync_exportedFiles folder and running the program again", exportedFilePath);
                 }
+                Console.WriteLine();
                 Console.WriteLine("Init list {0} from exported files ...", internalName);
                 AddToList(exportedFilePath, internalName);
             }
@@ -33,7 +35,6 @@
 
         public static void AddToList(string sourceFilePath, string internalName)
         {   
-
             if (!lists.ContainsKey(internalName)) 
             {
                 lists.Add(internalName, new List<string>());

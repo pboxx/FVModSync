@@ -29,11 +29,10 @@ namespace FVModSync
             try
             {
                 string[] pakNames = { "cfg", "scripts" };
-
-                QuickBmsUnpacker.Unpack(pakNames);
-
                 string[] csvRecognisedPaths = ConfigReader.LoadCsvPaths();
                 string[] modFiles = GenericFileHandler.SearchModFiles();
+
+                QuickBmsUnpacker.Unpack(pakNames);
 
                 foreach (string modFile in modFiles)
                 {
@@ -45,8 +44,7 @@ namespace FVModSync
                         // is this a game file we handle
                         if (csvRecognisedPaths.Contains(internalName))
                         {
-                            LibraryHandler.CopyModdedFileToDict(modFile);
-                            Console.WriteLine("Copy CSV content to dictionary: {0}", modFile);
+                            LibraryHandler.CopyFileToDict(modFile, internalName);
                         }
                         else // this is a custom csv
                         {

@@ -1,6 +1,7 @@
 ﻿namespace FVModSync.Extensions
 {
 	using System.Linq;
+    using FVModSync.Configuration;
 
 	/// <summary>
 	/// Extensions for the <see cref="string"/> class.
@@ -41,12 +42,18 @@
 		/// to the original game file.
 		/// </remarks>
 		/// </summary>
-		public static string GetRelevantPath(this string path)
+		public static string GetInternalName(this string path)
 		{
 			string[] pathParts = path.Split('\\').Skip(2).ToArray();
-			string relevantPath = "\\" + string.Join("\\", pathParts);
+			string internalName = "\\" + string.Join("\\", pathParts);
 
-			return relevantPath;
+			return internalName;
 		}
+
+        public static string GetTargetGameFile(this string internalName)
+        {
+            string targetFile = Config.GameFilePrefix + internalName;
+            return targetFile;
+        }
 	}
 }

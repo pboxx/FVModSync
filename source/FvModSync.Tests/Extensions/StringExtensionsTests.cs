@@ -10,7 +10,7 @@
 		[TestCase(@"mods\mod_name\cfg\normal\game.csv", @"\cfg\normal\game.csv")]
 		public void GetRelevantPathShouldSkipFirstTwoPathPartAndReturnRemainingString(string input, string expected)
 		{
-			string actual = input.GetRelevantPath();
+			string actual = input.GetInternalName();
 
 			Assert.AreEqual(expected, actual);
 		}

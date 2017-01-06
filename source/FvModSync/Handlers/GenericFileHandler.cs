@@ -7,17 +7,13 @@
 
     public class GenericFileHandler
     {
-
         public static void BackupIfExists(string filePath)
         {
             if (File.Exists(filePath))
             {
                 string backupFilePath = filePath + ".backup";
-
                 File.Delete(backupFilePath);
                 File.Copy(filePath, backupFilePath);
-
-                // Console.WriteLine("File exists -- create backup: {0}", filePath);
             }
         }
 
@@ -25,18 +21,12 @@
         {
             if (Directory.Exists(Config.ModsSubfolderName))
             {
-                Console.WriteLine();
-
                 string[] modFiles = Directory.GetFiles(Config.ModsSubfolderName, "*", SearchOption.AllDirectories);
 
                 Array.Sort(modFiles, StringComparer.InvariantCulture);
 
                 Console.WriteLine("Modded files found:");
-
-                foreach (string modFile in modFiles)
-                {
-                    Console.WriteLine(modFile);
-                }
+                foreach (string modFile in modFiles)  { Console.WriteLine(modFile); }
                 Console.WriteLine();
 
                 return modFiles;

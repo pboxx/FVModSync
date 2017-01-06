@@ -2,11 +2,16 @@
 
 A tool to install game mods for [Life is Feudal: Forest Village]. FVModSync enables users to organise their mods in a separate folder and copy them over automatically, rather than having to edit files in the game folder by hand. This ought to make it easier for players to use various different mods in parallel, at least until an official tool for this purpose is released. Also, it allows modders to include only the relevant data (i.e. content they have actually changed) in their mods, which improves compatibility between different mods.
 
-v0.2beta, for game version **0.9.6008**..**0.9.6034**
+v0.2.1beta, for game version **0.9.6008**..**0.9.6035**
 
 
 Changelog
 --
+v0.2.1beta:
+* Parse all CSV as single fields
+* Add support for CSV modularisation (partial CSV files; custom ignore sequence -- see "Notes for modders", below)
+* Additional error handling / CSV sanity checks
+
 v0.2beta:
 * Filter out tabs from modded CSV
 * Output error messages when important files/directories can't be found
@@ -89,8 +94,14 @@ It will put up a console window and tell you what it's doing; that window will r
 
 Notes for modders
 --
+
+0.2.1beta:
+
+* As of 0.2.1beta, you can have partial CSV in mods: include only those columns that you have edited; existing values will be preserved for all other columns
+* Additionally you can use the escape sequence "fvms:ignore" for individual fields you want to be ignored ( = existing values will be preserved for those fields)
+* Header fields in modded game files must now be left intact, otherwise FVModSync will ignore the entire file (since there wouldn't be any way to tell which column is which)
+
 * Mods should only include data that you have edited -- **no unchanged game content**. Having unchanged game content in your mod means you're prone to override somebody else's mod with the original, thus effectively breaking their mod (or vice versa). 
-* Leave the header intact in CSV files; FVModSync will ignore the first line
 * When you have custom scripts, include a /scripts/include.lua snippet listing only your scripts; those entries will be added to (Game Folder)/scripts/include.lua 
 * Mods should be distributed in a folder that is equivalent to the game root folder, using the same directory structure as the game. (Mod Folder)/mods/coolmod/cfg/funky/things.csv will be copied to (Game Folder)/cfg/funky/things.csv, for example.
 * FVModSync sorts all modded files alphanumerically (culture independent) before it starts to copy; the sorting incudes the entire file path from the mod root folder downwards (mod root folder = the one that you distribute, like "pbox_nicemod"). This means the load order is predictable and can be used to deliberately override things (the last mod that loads will override the rest); be aware though that users may change the name of your root folder.

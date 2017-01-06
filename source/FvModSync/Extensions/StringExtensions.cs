@@ -55,5 +55,15 @@
             string targetFile = Config.GameFilePrefix + internalName;
             return targetFile;
         }
+
+        public static string WrapDelimited(this string input)
+        {   
+            if (input.Contains(','))
+            {
+                string wrapped = "\"" + input + "\"";
+                return wrapped;
+            }
+            return input;
+        }
 	}
 }

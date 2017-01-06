@@ -18,7 +18,7 @@
             if (File.Exists(gameFilePath))
             {
                 Console.WriteLine();
-                Console.WriteLine("Init list {0} from game files ...", internalName);
+                Console.WriteLine("Init list from game files: {0} ...", internalName);
                 AddToList(gameFilePath, internalName);
             }
             else
@@ -28,7 +28,7 @@
                     throw new FileNotFoundException("Exported file {0} not found. Try deleting the FVModSync_exportedFiles folder and running the program again", exportedFilePath);
                 }
                 Console.WriteLine();
-                Console.WriteLine("Init list {0} from exported files ...", internalName);
+                Console.WriteLine("Init list from exported files: {0} ...", internalName);
                 AddToList(exportedFilePath, internalName);
             }
         }
@@ -58,7 +58,7 @@
                     }
                 }
             }
-            Console.WriteLine("Add to list {0}: content from {1}", internalName, sourceFilePath);
+            Console.WriteLine("Add to list {0}: {1}", internalName, sourceFilePath);
         }
 
         public static void CreateFileFromList(string internalName)

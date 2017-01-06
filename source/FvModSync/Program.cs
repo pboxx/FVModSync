@@ -12,16 +12,8 @@ namespace FVModSync
     using System;
     using System.Linq;
 
-    /// <summary>
-    /// The main program.
-    /// </summary>
     public static class Program
     {
-        // TODO verbose switch
-
-        /// <summary>
-        /// The main entry point.
-        /// </summary>
         public static void Main(string[] args)
         {
             Console.WriteLine(Config.Version);
@@ -37,21 +29,20 @@ namespace FVModSync
                 foreach (string modFile in modFiles)
                 {
                     string internalName = modFile.GetInternalName();
-                    string gameFilePath = Config.GameFilePrefix + internalName;
 
                     if (modFile.EndsWith(".csv", StringComparison.Ordinal))
                     {
                         // is this a game file we handle
                         if (csvRecognisedPaths.Contains(internalName))
                         {
-                            LibraryHandler.CopyFileToDict(modFile, internalName);
+                           CsvHandler.ParseCsvToTable(modFile, internalName);
                         }
                         else // this is a custom csv
                         {
                             GenericFileHandler.CopyFileFromModDir(modFile);
                         }
                     }
-                    else if (internalName == Config.InternalLuaIncludePath)
+                    else if (internalName == Config.InternalLuaIncludePath) // this is include.lua
                     {
                         ListHandler.AddToList(modFile, internalName);
                     }
@@ -63,21 +54,16 @@ namespace FVModSync
 
                 Console.WriteLine();
 
-                //foreach (string relevantPath in csvRecognisedPaths)
-                //{
-                //    LibraryHandler.CreateGameFileFromLibrary(relevantPath);
-                //}
-
-                LibraryHandler.CreateGameFilesFromLibrary();
-
+                // LibraryHandler.CreateGameFilesFromLibrary();
+                CsvHandler.CreateGameFilesFromTables();
                 ListHandler.CreateFileFromList(Config.InternalLuaIncludePath);
-
-                Console.WriteLine(" ");
+                
+                Console.WriteLine();
                 Console.WriteLine("Everything seems to be fine. Press Enter to close");
             }
             catch (Exception e)
             {
-                Console.Error.WriteLine("Error:");
+                Console.Error.WriteLine("ERROR:");
                 Console.Error.WriteLine("{0}: {1}\n{2}", e.GetType().Name, e.Message, e.StackTrace);
             }
             Console.ReadLine();

@@ -19,9 +19,6 @@
             using (XmlReader xmlReader = XmlReader.Create(ConfigFileName))
             {
                 Configuration configuration = (Configuration)xmlSerializer.Deserialize(xmlReader);
-
-                // TODO[pb] validate game version
-
                 return configuration.FileLocations;
             }
         }

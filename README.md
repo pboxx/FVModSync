@@ -127,7 +127,7 @@ This is because those have multiple entries with identical "names" (fields in th
 
 Troubleshooting / Feedback
 --
-* You can post in [Issues] or in the [Feedback thread] (Forest Village modding group on Steam).
+* You can post in [Issues] or in the [Feedback thread] in the Forest Village modding group on Steam.
 
 * When FVModSync seems unable to export the .pak files (or rather, unable to get quickbms to export them: this will result in an exception telling you "quickbms exited with code 3 -- please check that it is set up correctly"), check that life_is_feudal.bms is actually named life_is_feudal.bms and not life_is_feudal.bms**.txt**.
 

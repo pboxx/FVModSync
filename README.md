@@ -56,7 +56,7 @@ Requirements
 
 2. You need to create a Mods folder in your game files manually (ought to be Program Files/Steam/steamapps/common/Life is Feudal Forest Village), top level. The actual name of that folder is irrelevant, it's only referred to as "Mods folder" here for sake of simplicity.
 
-3. You need to download and unzip [quickbms] in your Mods folder, top level. The "life_is_feudal.bms" script also needs to be in the quickbms folder; make sure the file extension is actually .bms and not .txt. [1]
+3. You need to download and unzip [quickbms] in your Mods folder, top level. The [life_is_feudal.bms] script also needs to be in the quickbms folder; make sure the file extension is actually .bms and not .txt. [1]
 
 4. Mods that you want to manage with FVModSync need to be installed in Mods Folder/mods, and maintain the same directory structure and filenames that the game is using, so don't change anything inside the mod folders. [2] 
 
@@ -151,7 +151,8 @@ This program is distributed in the hope that it will be useful, but without any 
 
 
 [Life is Feudal: Forest Village]: http://steamcommunity.com/app/496460/
-[quickbms]: http://aluigi.altervista.org/quickbms.htm
+[quickbms]: http://aluigi.org/quickbms.htm
+[life_is_feudal.bms]: http://aluigi.org/bms/life_is_feudal.bms
 [GNU General Public License v3]: https://www.gnu.org/licenses/gpl-3.0.txt
 [Releases]: https://github.com/pboxx/FVModSync/releases
 [Issues]: https://github.com/pboxx/FVModSync/issues

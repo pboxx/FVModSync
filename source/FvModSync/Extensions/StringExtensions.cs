@@ -57,8 +57,8 @@
         }
 
         public static string WrapDelimited(this string input)
-        {   
-            if (input.Contains(','))
+        {
+            if (input.Contains(',') || input.Contains("\"\""))
             {
                 string wrapped = "\"" + input + "\"";
                 return wrapped;

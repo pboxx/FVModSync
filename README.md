@@ -7,6 +7,11 @@ v0.2beta, for game version **0.9.6008**..**0.9.6034**
 
 Changelog
 --
+v0.2.2beta: 
+* Ignore .zip from mod files
+* Copy generic files from mods only if they are newer than their equivalent in game files (if it exists)
+* Make quickbms use .bms.txt script if the user has renamed it; throw explicit exception if the script is missing entirely
+
 v0.2beta:
 * Filter out tabs from modded CSV
 * Output error messages when important files/directories can't be found
@@ -43,6 +48,7 @@ Features
 * Predictable overriding: sort mods alphanumerically, the last entry/file will override any conflicting entries/files
 * Warn users about override conflicts from modded CSV files in the console output
 * Ignore .txt/.TXT from mod folders so users can have readme files in there
+* Ignore .zip from mod folders so users can make backups / temporarily disable mods by zipping them
 
 
 Requirements
@@ -51,7 +57,7 @@ Requirements
 
 2. You need to create a Mods folder in your game files manually (ought to be Program Files/Steam/steamapps/common/Life is Feudal Forest Village), top level. The actual name of that folder is irrelevant, it's only referred to as "Mods folder" here for sake of simplicity.
 
-3. You need to download and unzip [quickbms] in your Mods folder, top level. The "life_is_feudal.bms" script also needs to be in the quickbms folder; make sure the file extension is actually .bms and not .txt. [1]
+3. You need to download and unzip [quickbms] in your Mods folder, top level. The "life_is_feudal.bms" script also needs to be in the quickbms folder. [1]
 
 4. Mods that you want to manage with FVModSync need to be installed in Mods Folder/mods, and maintain the same directory structure and filenames that the game is using, so don't change anything inside the mod folders. [2] 
 
@@ -94,7 +100,7 @@ Notes for modders
 * When you have custom scripts, include a /scripts/include.lua snippet listing only your scripts; those entries will be added to (Game Folder)/scripts/include.lua 
 * Mods should be distributed in a folder that is equivalent to the game root folder, using the same directory structure as the game. (Mod Folder)/mods/coolmod/cfg/funky/things.csv will be copied to (Game Folder)/cfg/funky/things.csv, for example.
 * FVModSync sorts all modded files alphanumerically (culture independent) before it starts to copy; the sorting incudes the entire file path from the mod root folder downwards (mod root folder = the one that you distribute, like "pbox_nicemod"). This means the load order is predictable and can be used to deliberately override things (the last mod that loads will override the rest); be aware though that users may change the name of your root folder.
-* FVModSync will ignore any .txt/.TXT files it finds in mod folders, so you can include readme files and the like as .txt
+* FVModSync will ignore any .txt/.TXT files it finds in mod folders, so you can include readme files and the like as .txt (it also ignores .zip in case there's a useful scenario for that)
 
 
 Known Issues
@@ -111,14 +117,12 @@ This is because those have multiple entries with identical "names" (fields in th
 
 * When you patch the game, **delete FVModSync_exportedFiles** and let FVModSync regenerate it from the patched game files (it will do that automatically). Forgetting to do so may lead to missing strings and the like, since it will continue to use those (now outdated) files.
 
-* FVModSync will copy anything that is in (Mods folder)/mods except txt. Far as I can tell, the game just ignores files that are not referenced anywhere, so it shouldn't hurt anything -- still, it is probably better not to dump random files into that folder.
+* FVModSync will copy anything that is in (Mods folder)/mods except txt and zip. Far as I can tell, the game just ignores files that are not referenced anywhere, so it shouldn't hurt anything -- still, it is probably better not to dump random files into that folder.
 
 
 Troubleshooting / Feedback
 --
 * You can post in [Issues] or in the [Feedback thread] in the Forest Village modding group on Steam.
-
-* When FVModSync seems unable to export the .pak files (or rather, unable to get quickbms to export them: this will result in an exception telling you "quickbms exited with code 3 -- please check that it is set up correctly"), check that life_is_feudal.bms is actually named life_is_feudal.bms and not life_is_feudal.bms**.txt**.
 
 * If you run into issues, the text from the console window may be helpful to figure out the problem: you can copy it with Edit > Select All; Edit > Copy via the context menu (rightclick) on the title bar. The game dumps a log in (Game Folder)/Log.log that is also often quite helpful.
 

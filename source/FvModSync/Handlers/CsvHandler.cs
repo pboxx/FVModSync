@@ -218,7 +218,7 @@
 
                             foreach (string entryValue in entryValues)
                             {
-                                delimitedEntriesWrapped.Add(entryValue.Replace(@"""", @"""""").WrapDelimited());
+                                delimitedEntriesWrapped.Add(entryValue.Replace(@"""", @"""""").Replace("\t", "").WrapDelimited());
                             }
                             line = String.Join(",", delimitedEntriesWrapped.ToArray());
 

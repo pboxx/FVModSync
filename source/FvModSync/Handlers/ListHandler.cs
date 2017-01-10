@@ -90,10 +90,6 @@
                     Console.WriteLine("Write list to game files: {0}", internalName);
                 }
             }
-            else 
-            {
-                Console.WriteLine("No list with name: {0}", internalName);
-            }
         }
     }
 }

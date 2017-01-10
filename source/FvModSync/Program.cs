@@ -55,7 +55,7 @@ namespace FVModSync
                     {
                         ListHandler.AddToList(modFile, internalName);
                     }
-                    else if (!modFile.EndsWith(".txt", StringComparison.OrdinalIgnoreCase)) // this is some other file
+                    else if (!modFile.EndsWith(".txt", StringComparison.OrdinalIgnoreCase) && !modFile.EndsWith(".zip", StringComparison.OrdinalIgnoreCase)) // this is some other file
                     {
                         GenericFileHandler.CopyFileFromModDir(modFile);
                     }

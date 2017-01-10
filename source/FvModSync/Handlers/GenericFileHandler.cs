@@ -45,10 +45,20 @@
 
             if (File.Exists(targetFile))
             {
-                File.Delete(targetFile);
-                File.Copy(modFile, targetFile);
-                Console.WriteLine();
-                Console.WriteLine("Copy file {0} to {1} (overwrite)", modFile, targetFile);
+                FileInfo modFileInfo = new FileInfo(modFile);
+                FileInfo targetFileInfo = new FileInfo(targetFile);
+
+                if (modFileInfo.LastWriteTime > targetFileInfo.LastWriteTime)
+                {
+                    File.Delete(targetFile);
+                    File.Copy(modFile, targetFile);
+                    Console.WriteLine();
+                    Console.WriteLine("Copy file {0} to {1} (overwrite)", modFile, targetFile);
+                }
+                else
+                {
+                    Console.WriteLine("File {0} and {1} have identical timestamps (ignoring)", modFile, targetFile);
+                }
             }
             else
             {

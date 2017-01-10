@@ -41,8 +41,6 @@
         {
             string targetFile = Config.GameFilePrefix + modFile.GetInternalName();
 
-            // TODO decide how we deal with existing files here .. backup them all?
-
             if (File.Exists(targetFile))
             {
                 FileInfo modFileInfo = new FileInfo(modFile);
@@ -54,10 +52,6 @@
                     File.Copy(modFile, targetFile);
                     Console.WriteLine();
                     Console.WriteLine("Copy file {0} to {1} (overwrite)", modFile, targetFile);
-                }
-                else
-                {
-                    Console.WriteLine("File {0} and {1} have identical timestamps (ignoring)", modFile, targetFile);
                 }
             }
             else

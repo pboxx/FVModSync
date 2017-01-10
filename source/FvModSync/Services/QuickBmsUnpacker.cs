@@ -9,7 +9,25 @@ namespace FVModSync.Services
     {
         public static void Unpack(string[] pakNames)
         {
-           foreach (string pakName in pakNames)
+            string scriptPath = "";
+
+            if (!File.Exists(@"quickbms\life_is_feudal.bms"))
+            {
+                if (File.Exists(@"quickbms\life_is_feudal.bms.txt"))
+                {
+                    scriptPath = @"quickbms\life_is_feudal.bms.txt";
+                }
+                else
+                {
+                    throw new FileNotFoundException(string.Format("quickbms script (life_is_feudal.bms) not found -- please put it in the quickbms folder."));
+                }
+            }
+            else
+            {
+                scriptPath = @"quickbms\life_is_feudal.bms";
+            }    
+            
+            foreach (string pakName in pakNames)
             {
                 // TODO find less pedestrian way (than just "if dir exists") to determine whether exports are valid
 
@@ -18,21 +36,21 @@ namespace FVModSync.Services
 
                 if (!Directory.Exists(pakExportDir)) 
                 {
-                   Console.WriteLine("Exporting {0} from game files to {1} ... ", pakPath, Config.ExportFolderName);
+                    Console.WriteLine("Exporting {0} from game files to {1} ... ", pakPath, Config.ExportFolderName);
 
-                   Process quickbms = new Process();
-                   quickbms.StartInfo.FileName = @"quickbms\quickbms.exe";
-                   quickbms.StartInfo.Arguments = @"-o -q -Y -Q quickbms\life_is_feudal.bms " + pakPath + " " + Config.ExportFolderName;
-                   quickbms.StartInfo.UseShellExecute = false;
-                   quickbms.StartInfo.RedirectStandardInput = true;
-                   quickbms.Start();
-                   quickbms.StandardInput.WriteLine("\n");
-                   quickbms.WaitForExit(1000);
+                    Process quickbms = new Process();
+                    quickbms.StartInfo.FileName = @"quickbms\quickbms.exe";
+                    quickbms.StartInfo.Arguments = @"-o -q -Y -Q " + scriptPath + " " + pakPath + " " + Config.ExportFolderName;
+                    quickbms.StartInfo.UseShellExecute = false;
+                    quickbms.StartInfo.RedirectStandardInput = true;
+                    quickbms.Start();
+                    quickbms.StandardInput.WriteLine("\n");
+                    quickbms.WaitForExit(1000);
 
-                   if (quickbms.ExitCode != 0)
-                   {
-                       throw new InvalidOperationException(string.Format("quickbms exited with code {0} -- please check that it is set up correctly.", quickbms.ExitCode));
-                   }
+                    if (quickbms.ExitCode != 0)
+                    {
+                        throw new InvalidOperationException(string.Format("quickbms exited with code {0} -- please check that it is set up correctly.", quickbms.ExitCode));
+                    }
                 }
                 else
                 {

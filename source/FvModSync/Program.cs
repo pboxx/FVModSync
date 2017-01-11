@@ -20,7 +20,7 @@ namespace FVModSync
 
             try
             {
-                string[] pakNames = { "cfg", "scripts" };
+                string[] pakNames = { "cfg", "scripts", "gui" };
                 string[] csvRecognisedPaths = ConfigReader.LoadCsvPaths();
                 string[] modFiles = GenericFileHandler.SearchModFiles();
 
@@ -48,7 +48,11 @@ namespace FVModSync
                     }
                     else if (internalName == Config.InternalLuaConfigPath)
                     {
-                        AssignmentListHandler.AddToList(modFile, internalName);
+                        AssignmentListHandler.AddToAssignmentList(modFile, internalName);
+                    }
+                    else if (modFile.EndsWith(".scheme", StringComparison.Ordinal))
+                    {
+                        SchemeHandler.AddToScheme(modFile, internalName);
                     }
                     else if (!modFile.EndsWith(".txt", StringComparison.OrdinalIgnoreCase) && !modFile.EndsWith(".zip", StringComparison.OrdinalIgnoreCase)) // this is some other file
                     {
@@ -62,6 +66,7 @@ namespace FVModSync
                 CsvHandler.CreateGameFilesFromTables();
                 ListHandler.CreateFilesFromLists();
                 AssignmentListHandler.CreateFilesFromLists();
+                SchemeHandler.CreateFilesFromSchemes();
                 
                 Console.WriteLine();
                 Console.WriteLine("Everything seems to be fine. Press Enter to close");

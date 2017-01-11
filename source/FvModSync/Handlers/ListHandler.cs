@@ -12,25 +12,7 @@
 
         public static void InitList(string internalName)
         {
-            string exportedFilePath = Config.ExportFolderName + internalName;
-            string gameFilePath = Config.GameFilePrefix + internalName;
-
-            if (File.Exists(gameFilePath))
-            {
-                Console.WriteLine();
-                Console.WriteLine("Init list from game files: {0} ...", internalName);
-                AddToList(gameFilePath, internalName);
-            }
-            else
-            {
-                if (!File.Exists(exportedFilePath))
-                {
-                    throw new FileNotFoundException("Exported file {0} not found. Try deleting the FVModSync_exportedFiles folder and running the program again", exportedFilePath);
-                }
-                Console.WriteLine();
-                Console.WriteLine("Init list from exported files: {0} ...", internalName);
-                AddToList(exportedFilePath, internalName);
-            }
+            GenericFileHandler.Init(AddToList, internalName);
         }
 
         public static void AddToList(string sourceFilePath, string internalName)

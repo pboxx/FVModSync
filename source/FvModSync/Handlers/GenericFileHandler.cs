@@ -2,6 +2,7 @@
 {
     using FVModSync.Configuration;
     using FVModSync.Extensions;
+    using FVModSync.Handlers;
     using System;
     using System.IO;
 
@@ -34,6 +35,31 @@
             else
             {
                 throw new DirectoryNotFoundException("Mods subfolder not found. Try putting your mods in a subfolder named \"mods\" and running the program again");
+            }
+        }
+
+
+        public static void Init(Action<string, string> AddToTarget, string internalName)
+        {
+            string exportedFilePath = Config.ExportFolderName + internalName;
+            string gameFilePath = Config.GameFilePrefix + internalName;
+
+            var info = AddToTarget.Method;
+            if (File.Exists(gameFilePath))
+            {
+                Console.WriteLine();
+                Console.WriteLine("Init from game files: {0} ...", internalName);
+                AddToTarget(gameFilePath, internalName);
+            }
+            else
+            {
+                if (!File.Exists(exportedFilePath))
+                {
+                    throw new FileNotFoundException("Exported file {0} not found. Try deleting the FVModSync_exportedFiles folder and running the program again", exportedFilePath);
+                }
+                Console.WriteLine();
+                Console.WriteLine("Init from exported files: {0} ...", internalName);
+                AddToTarget(exportedFilePath, internalName);
             }
         }
 

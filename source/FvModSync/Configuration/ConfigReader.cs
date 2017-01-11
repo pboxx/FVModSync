@@ -12,13 +12,13 @@
         {
             if (!File.Exists(ConfigFileName))
             {
-                throw new FileNotFoundException("Configuration file not found", ConfigFileName);
+                throw new FileNotFoundException("FVModSync.cfg not found");
             }
 
-            XmlSerializer xmlSerializer = new XmlSerializer(typeof(Configuration));
+            XmlSerializer xmlSerializer = new XmlSerializer(typeof(ExternalConfig));
             using (XmlReader xmlReader = XmlReader.Create(ConfigFileName))
             {
-                Configuration configuration = (Configuration)xmlSerializer.Deserialize(xmlReader);
+                ExternalConfig configuration = (ExternalConfig)xmlSerializer.Deserialize(xmlReader);
                 return configuration.FileLocations;
             }
         }

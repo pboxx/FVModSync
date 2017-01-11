@@ -15,25 +15,7 @@
 
         public static void InitTable(string internalName)
         {
-            string exportedFilePath = Config.ExportFolderName + internalName;
-            string gameFilePath = Config.GameFilePrefix + internalName;
-
-            if (File.Exists(gameFilePath))
-            {
-                Console.WriteLine();
-                Console.WriteLine("Init from game files: {0} ...", internalName);
-                ParseCsvToTable(gameFilePath, internalName);
-            }
-            else
-            {
-                if (!File.Exists(exportedFilePath))
-                {
-                    throw new FileNotFoundException("Exported CSV file not found. Try deleting the FVModSync_exportedFiles folder and running the program again.", exportedFilePath);
-                }
-                Console.WriteLine();
-                Console.WriteLine("Init from exported files: {0} ...", internalName);
-                ParseCsvToTable(exportedFilePath, internalName);
-            }
+            GenericFileHandler.Init(ParseCsvToTable, internalName);
         }
 
         public static void ParseCsvToTable(string sourceFilePath, string internalName) 

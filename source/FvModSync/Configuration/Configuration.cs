@@ -16,7 +16,7 @@ namespace FVModSync.Configuration
     }
 
     [XmlRoot(ElementName = "configuration")]
-    public sealed class Configuration
+    public sealed class ExternalConfig
     {
         [XmlElement(ElementName = "gameVersion", Form = XmlSchemaForm.Unqualified)]
         public string GameVersion { get; set; }

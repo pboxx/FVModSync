@@ -1,14 +1,15 @@
 ﻿namespace FVModSync.Handlers
 {
     using FVModSync.Configuration;
+    using FVModSync.Extensions;
     using System;
     using System.Collections.Generic;
     using System.IO;
     using System.Linq;
 
-    public class ListHandler
+    public class AssignmentListHandler
     {
-        private static readonly Dictionary<string, List<string>> lists = new Dictionary<string, List<string>>();
+        private static readonly Dictionary<string, Dictionary<string, string>> assignmentLists = new Dictionary<string, Dictionary<string, string>>();
 
         public static void InitList(string internalName)
         {
@@ -28,20 +29,20 @@
                     throw new FileNotFoundException("Exported file {0} not found. Try deleting the FVModSync_exportedFiles folder and running the program again", exportedFilePath);
                 }
                 Console.WriteLine();
-                Console.WriteLine("Init list from exported files: {0} ...", internalName);
+                Console.WriteLine("Init assignment list from exported files: {0} ...", internalName);
                 AddToList(exportedFilePath, internalName);
             }
         }
 
         public static void AddToList(string sourceFilePath, string internalName)
-        {   
-            if (!lists.ContainsKey(internalName)) 
+        {
+            if (!assignmentLists.ContainsKey(internalName))
             {
-                lists.Add(internalName, new List<string>());
-                InitList(internalName); 
+                assignmentLists.Add(internalName, new Dictionary<string, string>());
+                InitList(internalName);
             }
 
-            List<string> list = lists[internalName];
+            Dictionary<string, string> assignmentList = assignmentLists[internalName];
 
             using (Stream stream = File.Open(sourceFilePath, FileMode.Open))
             {
@@ -52,23 +53,29 @@
 
                 foreach (string contentLine in contentLines)
                 {
-                    if (!list.Contains(contentLine))
+                    if (!contentLine.Trim().Equals("}"))
                     {
-                        list.Add(contentLine);
+                        var parts = contentLine.Split('=');
+                        var key = parts[0].Trim();
+                        if (parts.Length > 1 && key != "config")
+                        {
+                            var val = parts[1].Trim();
+                            assignmentList.SetValue(key, val);
+                        }
                     }
                 }
             }
-            Console.WriteLine("Add to list {0}: {1}", internalName, sourceFilePath);
+            Console.WriteLine("Add to assignment list {0}: {1}", internalName, sourceFilePath);
         }
 
         public static void CreateFilesFromLists()
         {
-            foreach (KeyValuePair<string, List<string>> list in lists)
+            foreach (KeyValuePair<string, Dictionary<string, string>> assignmentList in assignmentLists)
             {
-                var internalName = list.Key;
-                var listContent = list.Value;
+                var internalName = assignmentList.Key;
+                var listEntries = assignmentList.Value;
 
-                if (listContent.Any()) // dont write empty lists
+                if (listEntries.Any()) // dont write empty lists
                 {
                     string gameFilePath = Config.GameFilePrefix + internalName;
                     GenericFileHandler.BackupIfExists(gameFilePath);
@@ -80,15 +87,16 @@
                     {
                         using (StreamWriter writer = new StreamWriter(gameFileStream))
                         {
-                            string[] contentLines = listContent.ToArray();
-
-                            foreach (string contentLine in contentLines)
+                            writer.WriteLine("config =");
+                            writer.WriteLine("{");
+                            foreach (KeyValuePair<string, string> listEntry in listEntries)
                             {
-                                writer.WriteLine(contentLine);
+                                writer.WriteLine("    " + listEntry.Key + " = " + listEntry.Value);
                             }
+                            writer.WriteLine("}");
                         }
                     }
-                    Console.WriteLine("Write list to game files: {0}", internalName);
+                    Console.WriteLine("Write assignment list to game files: {0}", internalName);
                 }
             }
         }

@@ -11,6 +11,7 @@ namespace FVModSync.Configuration
         public const string ExportFolderName = "FVModSync_exportedFiles";
         public const string ModsSubfolderName = "mods";
         public const string InternalLuaIncludePath = @"\scripts\include.lua";
+        public const string InternalLuaConfigPath = @"\scripts\config.lua";
         public const string IgnoreCsvFieldString = @"fvsm:ignore";
     }
 

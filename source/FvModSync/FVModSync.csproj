@@ -64,6 +64,7 @@
     <Compile Include="Configuration\Configuration.cs" />
     <Compile Include="Extensions\DictionaryExtensions.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
+    <Compile Include="Handlers\AssignmentListHandler.cs" />
     <Compile Include="Handlers\CsvHandler.cs" />
     <Compile Include="Handlers\GenericFileHandler.cs" />
     <Compile Include="Handlers\ListHandler.cs" />

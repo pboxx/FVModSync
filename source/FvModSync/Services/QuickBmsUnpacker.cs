@@ -7,7 +7,7 @@ namespace FVModSync.Services
 
     public class QuickBmsUnpacker
     {
-        public static void Unpack(string[] pakNames)
+        public static bool Unpack(string[] pakNames)
         {
             string scriptPath = "";
 
@@ -45,12 +45,12 @@ namespace FVModSync.Services
                     quickbms.StartInfo.RedirectStandardInput = true;
                     quickbms.Start();
                     quickbms.StandardInput.WriteLine("\n");
-                    quickbms.WaitForExit(1000);
+                    quickbms.WaitForExit();
 
                     if (quickbms.ExitCode != 0)
                     {
                         throw new InvalidOperationException(string.Format("quickbms exited with code {0} -- please check that it is set up correctly.", quickbms.ExitCode));
-                    }
+                    }            
                 }
                 else
                 {
@@ -58,6 +58,7 @@ namespace FVModSync.Services
                 }
             }
             Console.WriteLine();
+            return true;
         }
     }
 }

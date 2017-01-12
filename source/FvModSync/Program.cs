@@ -20,56 +20,57 @@ namespace FVModSync
 
             try
             {
-                string[] pakNames = { "cfg", "scripts", "gui" };
+                string[] pakNames = { "cfg", "scripts" };
                 string[] csvRecognisedPaths = ConfigReader.LoadCsvPaths();
                 string[] modFiles = GenericFileHandler.SearchModFiles();
 
-                QuickBmsUnpacker.Unpack(pakNames);
-
-                foreach (string modFile in modFiles)
+                if (QuickBmsUnpacker.Unpack(pakNames))
                 {
-                    string internalName = modFile.GetInternalName();
-
-                    if (modFile.EndsWith(".csv", StringComparison.Ordinal))
+                    foreach (string modFile in modFiles)
                     {
-                        // is this a game file we handle
-                        if (csvRecognisedPaths.Contains(internalName))
+                        string internalName = modFile.GetInternalName();
+
+                        if (modFile.EndsWith(".csv", StringComparison.Ordinal))
                         {
-                           CsvHandler.ParseCsvToTable(modFile, internalName);
+                            // is this a game file we handle
+                            if (csvRecognisedPaths.Contains(internalName))
+                            {
+                                CsvHandler.ParseCsvToTable(modFile, internalName);
+                            }
+                            else // this is a custom csv
+                            {
+                                GenericFileHandler.CopyFileFromModDir(modFile);
+                            }
                         }
-                        else // this is a custom csv
+                        else if (internalName == Config.InternalLuaIncludePath)
+                        {
+                            ListHandler.AddToList(modFile, internalName);
+                        }
+                        else if (internalName == Config.InternalLuaConfigPath)
+                        {
+                            AssignmentListHandler.AddToAssignmentList(modFile, internalName);
+                        }
+                        else if (modFile.EndsWith(".scheme", StringComparison.Ordinal))
+                        {
+                            if (QuickBmsUnpacker.Unpack(new string[] { "gui" }))
+                            {
+                                SchemeHandler.AddToScheme(modFile, internalName);
+                            }
+                        }
+                        else if (!modFile.EndsWith(".txt", StringComparison.OrdinalIgnoreCase) && !modFile.EndsWith(".zip", StringComparison.OrdinalIgnoreCase)) // this is some other file
                         {
                             GenericFileHandler.CopyFileFromModDir(modFile);
                         }
                     }
-                    else if (internalName == Config.InternalLuaIncludePath)
-                    {
-                        ListHandler.AddToList(modFile, internalName);
-                    }
-                    else if (internalName == Config.InternalLuaConfigPath)
-                    {
-                        AssignmentListHandler.AddToAssignmentList(modFile, internalName);
-                    }
-                    else if (modFile.EndsWith(".scheme", StringComparison.Ordinal))
-                    {
-                        SchemeHandler.AddToScheme(modFile, internalName);
-                    }
-                    else if (!modFile.EndsWith(".txt", StringComparison.OrdinalIgnoreCase) && !modFile.EndsWith(".zip", StringComparison.OrdinalIgnoreCase)) // this is some other file
-                    {
-                        GenericFileHandler.CopyFileFromModDir(modFile);
-                    }
+                    Console.WriteLine();
+                    CsvHandler.CreateGameFilesFromTables();
+                    ListHandler.CreateFilesFromLists();
+                    AssignmentListHandler.CreateFilesFromLists();
+                    SchemeHandler.CreateFilesFromSchemes();
+
+                    Console.WriteLine();
+                    Console.WriteLine("Everything seems to be fine. Press Enter to close");
                 }
-
-                Console.WriteLine();
-
-                // LibraryHandler.CreateGameFilesFromLibrary();
-                CsvHandler.CreateGameFilesFromTables();
-                ListHandler.CreateFilesFromLists();
-                AssignmentListHandler.CreateFilesFromLists();
-                SchemeHandler.CreateFilesFromSchemes();
-                
-                Console.WriteLine();
-                Console.WriteLine("Everything seems to be fine. Press Enter to close");
             }
             catch (Exception e)
             {

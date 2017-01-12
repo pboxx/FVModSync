@@ -50,6 +50,10 @@ namespace FVModSync
                         {
                             AssignmentListHandler.AddToAssignmentList(modFile, internalName);
                         }
+                        else if (Config.modDefaults.Contains(internalName))
+                        {
+                            ArrayHandler.AddToArray(modFile, internalName);
+                        }
                         else if (modFile.EndsWith(".scheme", StringComparison.Ordinal))
                         {
                             if (QuickBmsUnpacker.Unpack(new string[] { "gui" }))
@@ -65,8 +69,9 @@ namespace FVModSync
                     Console.WriteLine();
                     CsvHandler.CreateGameFilesFromTables();
                     ListHandler.CreateFilesFromLists();
-                    AssignmentListHandler.CreateFilesFromLists();
                     SchemeHandler.CreateFilesFromSchemes();
+                    AssignmentListHandler.CreateFilesFromLists();
+                    ArrayHandler.CreateFilesFromLists();
 
                     Console.WriteLine();
                     Console.WriteLine("Everything seems to be fine. Press Enter to close");

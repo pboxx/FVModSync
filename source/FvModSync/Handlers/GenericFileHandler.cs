@@ -38,13 +38,24 @@
             }
         }
 
+        public static void InitFromModDefault(Action<string, string> AddToTarget, string internalName)
+        {
+            string modDefaultFilePath = Config.ModDefaultsFolderName + internalName;
+                
+            if (!File.Exists(modDefaultFilePath)) 
+            {
+                throw new FileNotFoundException("Mod default {0} not found.", modDefaultFilePath);
+            }
+            Console.WriteLine();
+            Console.WriteLine("Init from mod default: {0} ...", internalName);
+            AddToTarget(modDefaultFilePath, internalName);
+        }
 
         public static void Init(Action<string, string> AddToTarget, string internalName)
         {
             string exportedFilePath = Config.ExportFolderName + internalName;
             string gameFilePath = Config.GameFilePrefix + internalName;
 
-            var info = AddToTarget.Method;
             if (File.Exists(gameFilePath))
             {
                 Console.WriteLine();

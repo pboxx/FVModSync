@@ -1,6 +1,5 @@
 ﻿namespace FVModSync.Extensions
 {
-    using FVModSync.Configuration;
     using System.Linq;
 
 	/// <summary>

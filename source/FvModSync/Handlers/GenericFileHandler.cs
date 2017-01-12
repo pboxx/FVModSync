@@ -2,7 +2,6 @@
 {
     using FVModSync.Configuration;
     using FVModSync.Extensions;
-    using FVModSync.Handlers;
     using System;
     using System.IO;
 
@@ -12,7 +11,7 @@
         {
             if (File.Exists(filePath))
             {
-                string backupFilePath = filePath + ".backup";
+                string backupFilePath = filePath + ExternalConfig.GameFileBackupSuffix;
                 File.Delete(backupFilePath);
                 File.Copy(filePath, backupFilePath);
             }
@@ -20,9 +19,9 @@
 
         public static string[] SearchModFiles()
         {
-            if (Directory.Exists(Config.ModsSubfolderName))
+            if (Directory.Exists(ExternalConfig.ModsSubfolderName))
             {
-                string[] modFiles = Directory.GetFiles(Config.ModsSubfolderName, "*", SearchOption.AllDirectories);
+                string[] modFiles = Directory.GetFiles(ExternalConfig.ModsSubfolderName, "*", SearchOption.AllDirectories);
 
                 Array.Sort(modFiles, StringComparer.InvariantCulture);
 
@@ -38,23 +37,10 @@
             }
         }
 
-        public static void InitFromModDefault(Action<string, string> AddToTarget, string internalName)
-        {
-            string modDefaultFilePath = Config.ModDefaultsFolderName + internalName;
-                
-            if (!File.Exists(modDefaultFilePath)) 
-            {
-                throw new FileNotFoundException("Mod default {0} not found.", modDefaultFilePath);
-            }
-            Console.WriteLine();
-            Console.WriteLine("Init from mod default: {0} ...", internalName);
-            AddToTarget(modDefaultFilePath, internalName);
-        }
-
         public static void Init(Action<string, string> AddToTarget, string internalName)
         {
-            string exportedFilePath = Config.ExportFolderName + internalName;
-            string gameFilePath = Config.GameFilePrefix + internalName;
+            string exportedFilePath = ExternalConfig.ExportFolderName + internalName;
+            string gameFilePath = ExternalConfig.GameFilePrefix + internalName;
 
             if (File.Exists(gameFilePath))
             {
@@ -76,7 +62,7 @@
 
         public static void CopyFileFromModDir(string modFile)
         {
-            string targetFile = Config.GameFilePrefix + modFile.GetInternalName();
+            string targetFile = ExternalConfig.GameFilePrefix + modFile.GetInternalName();
 
             if (File.Exists(targetFile))
             {

@@ -53,10 +53,10 @@
                 var internalName = xmlscheme.Key;
                 var xmlFile = xmlscheme.Value;
 
-                string gameFilePath = Config.GameFilePrefix + internalName;
+                string gameFilePath = ExternalConfig.GameFilePrefix + internalName;
                 GenericFileHandler.BackupIfExists(gameFilePath);
 
-                string targetDir = Config.GameFilePrefix + Path.GetDirectoryName(internalName);
+                string targetDir = ExternalConfig.GameFilePrefix + Path.GetDirectoryName(internalName);
                 Directory.CreateDirectory(targetDir);
 
                 using (XmlWriter writer = XmlWriter.Create(gameFilePath, settings))

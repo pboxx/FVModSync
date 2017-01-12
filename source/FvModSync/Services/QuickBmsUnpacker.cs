@@ -31,16 +31,16 @@ namespace FVModSync.Services
             {
                 // TODO find less pedestrian way (than just "if dir exists") to determine whether exports are valid
 
-                string pakPath = Config.GameFilePrefix + @"\" + pakName + ".pak";
-                string pakExportDir = Config.ExportFolderName + @"\" + pakName;
+                string pakPath = ExternalConfig.GameFilePrefix + @"\" + pakName + ".pak";
+                string pakExportDir = ExternalConfig.ExportFolderName + @"\" + pakName;
 
                 if (!Directory.Exists(pakExportDir)) 
                 {
-                    Console.WriteLine("Exporting {0} from game files to {1} ... ", pakPath, Config.ExportFolderName);
+                    Console.WriteLine("Exporting {0} from game files to {1} ... ", pakPath, ExternalConfig.ExportFolderName);
 
                     Process quickbms = new Process();
                     quickbms.StartInfo.FileName = @"quickbms\quickbms.exe";
-                    quickbms.StartInfo.Arguments = @"-o -q -Y -Q " + scriptPath + " " + pakPath + " " + Config.ExportFolderName;
+                    quickbms.StartInfo.Arguments = @"-o -q -Y -Q " + scriptPath + " " + pakPath + " " + ExternalConfig.ExportFolderName;
                     quickbms.StartInfo.UseShellExecute = false;
                     quickbms.StartInfo.RedirectStandardInput = true;
                     quickbms.Start();

@@ -1,5 +1,5 @@
 ﻿/*
-Mod installer for Life is Feudal: Forest Village
+Mod installer for Life is Feudal: Forest Village (c) pbox 2016
 Published under the GNU General Public License https://www.gnu.org/licenses/gpl-3.0.txt
 */
 
@@ -10,19 +10,23 @@ namespace FVModSync
     using FVModSync.Handlers;
     using FVModSync.Services;
     using System;
+    using System.Collections.Generic;
     using System.Linq;
 
     public static class Program
     {
+
         public static void Main(string[] args)
         {
-            Console.WriteLine(Config.Version);
+            // TODO figure out actual game version + reexport if necessary
+            ConfigReader.InitConfig();
+            Console.WriteLine(InternalConfig.VersionBlurb);
 
             try
             {
                 string[] pakNames = { "cfg", "scripts" };
-                string[] csvRecognisedPaths = ConfigReader.LoadCsvPaths();
                 string[] modFiles = GenericFileHandler.SearchModFiles();
+                List<string> csvRecognisedPaths = ExternalConfig.FileLocations;
 
                 if (QuickBmsUnpacker.Unpack(pakNames))
                 {
@@ -42,15 +46,15 @@ namespace FVModSync
                                 GenericFileHandler.CopyFileFromModDir(modFile);
                             }
                         }
-                        else if (internalName == Config.InternalLuaIncludePath)
+                        else if (internalName == InternalConfig.InternalLuaIncludePath)
                         {
                             ListHandler.AddToList(modFile, internalName);
                         }
-                        else if (internalName == Config.InternalLuaConfigPath)
+                        else if (internalName == InternalConfig.InternalLuaConfigPath)
                         {
                             AssignmentListHandler.AddToAssignmentList(modFile, internalName);
                         }
-                        else if (Config.modDefaults.Contains(internalName))
+                        else if (InternalConfig.modDefaults.Contains(internalName))
                         {
                             ArrayHandler.AddToArray(modFile, internalName);
                         }
@@ -71,7 +75,7 @@ namespace FVModSync
                     ListHandler.CreateFilesFromLists();
                     XmlHandler.CreateFilesFromXml();
                     AssignmentListHandler.CreateFilesFromLists();
-                    ArrayHandler.CreateFilesFromLists();
+                    ArrayHandler.CreateFilesFromArrays();
 
                     Console.WriteLine();
                     Console.WriteLine("Everything seems to be fine. Press Enter to close");

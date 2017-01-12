@@ -50,12 +50,12 @@
                 var internalName = list.Key;
                 var listContent = list.Value;
 
-                if (listContent.Any()) // dont write empty lists
+                if (listContent.Any()) // dont write empty arrays
                 {
-                    string gameFilePath = Config.GameFilePrefix + internalName;
+                    string gameFilePath = ExternalConfig.GameFilePrefix + internalName;
                     GenericFileHandler.BackupIfExists(gameFilePath);
 
-                    string targetDir = Config.GameFilePrefix + Path.GetDirectoryName(internalName);
+                    string targetDir = ExternalConfig.GameFilePrefix + Path.GetDirectoryName(internalName);
                     Directory.CreateDirectory(targetDir);
 
                     using (Stream gameFileStream = File.Open(gameFilePath, FileMode.Create))

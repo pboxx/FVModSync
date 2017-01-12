@@ -20,7 +20,7 @@
 
         public static void ParseCsvToTable(string sourceFilePath, string internalName) 
         {
-            string[] csvRecognisedPaths = ConfigReader.LoadCsvPaths();
+            List<string> csvRecognisedPaths = ExternalConfig.FileLocations;
 
             if (!libraryOfEntries.ContainsKey(internalName))
             {
@@ -35,7 +35,7 @@
 
             bool isMod = false;
 
-            if (sourceFilePath.StartsWith(Config.ModsSubfolderName))
+            if (sourceFilePath.StartsWith(ExternalConfig.ModsSubfolderName))
             {
                 isMod = true;
             }
@@ -76,7 +76,7 @@
                                         string fieldValue = record[i];
                                         string fieldName = header[i];
 
-                                        if (fieldValue != Config.IgnoreCsvFieldString)
+                                        if (fieldValue != InternalConfig.IgnoreCsvFieldString)
                                         {
                                             if (IsDirty(internalName, recordName, fieldName))
                                             {
@@ -181,10 +181,10 @@
                 var recordNames = tableContent.Keys;
                 var records = tableContent.Values; 
                 
-                string gameFilePath = Config.GameFilePrefix + internalName;
+                string gameFilePath = ExternalConfig.GameFilePrefix + internalName;
                 GenericFileHandler.BackupIfExists(gameFilePath);
 
-                string targetDir = Config.GameFilePrefix + @"\" + Path.GetDirectoryName(internalName);
+                string targetDir = ExternalConfig.GameFilePrefix + @"\" + Path.GetDirectoryName(internalName);
                 Directory.CreateDirectory(targetDir); 
 
                 using (Stream gameFile = File.Open(".." + internalName, FileMode.Create))

@@ -1,25 +1,32 @@
 ﻿namespace FVModSync.Configuration
 {
+    using System;
     using System.IO;
-    using System.Xml;
-    using System.Xml.Serialization;
+    using System.Linq;
+    using System.Xml.Linq;
 
     public class ConfigReader
     {
         private const string ConfigFileName = "FVModSync.cfg";
 
-        public static string[] LoadCsvPaths()
+        public static void InitConfig()
         {
             if (!File.Exists(ConfigFileName))
             {
-                throw new FileNotFoundException("FVModSync.cfg not found");
+                Console.WriteLine("FVModSync.cfg not found; using default values");
             }
-
-            XmlSerializer xmlSerializer = new XmlSerializer(typeof(ExternalConfig));
-            using (XmlReader xmlReader = XmlReader.Create(ConfigFileName))
+            else
             {
-                ExternalConfig configuration = (ExternalConfig)xmlSerializer.Deserialize(xmlReader);
-                return configuration.FileLocations;
+                XDocument xconfig = XDocument.Load("FVModSync.cfg");
+
+                ExternalConfig.GameVersion = xconfig.Root.Element("gameVersion").Value;
+                ExternalConfig.GameFilePrefix = xconfig.Root.Element("gameFilePrefix").Value;
+                ExternalConfig.GameFileBackupSuffix = xconfig.Root.Element("gameFileBackupSuffix").Value;
+                ExternalConfig.ExportFolderName = xconfig.Root.Element("exportFolderName").Value;
+                ExternalConfig.ModsSubfolderName = xconfig.Root.Element("modsSubfolderName").Value;
+                ExternalConfig.ModDefaultsSubfolderName = xconfig.Root.Element("modDefaultsFolderName").Value;
+                ExternalConfig.ConsoleVerbosity = xconfig.Root.Element("consoleVerbosity").Value;
+                ExternalConfig.FileLocations = xconfig.Root.Element("fileLocations").Descendants().Select(e => e.Value).ToList();
             }
         }
     }

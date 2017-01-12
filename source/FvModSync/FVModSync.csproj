@@ -69,7 +69,7 @@
     <Compile Include="Handlers\CsvHandler.cs" />
     <Compile Include="Handlers\GenericFileHandler.cs" />
     <Compile Include="Handlers\ListHandler.cs" />
-    <Compile Include="Handlers\SchemeHandler.cs" />
+    <Compile Include="Handlers\XmlHandler.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\QuickBmsUnpacker.cs" />

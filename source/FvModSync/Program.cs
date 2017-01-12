@@ -54,11 +54,11 @@ namespace FVModSync
                         {
                             ArrayHandler.AddToArray(modFile, internalName);
                         }
-                        else if (modFile.EndsWith(".scheme", StringComparison.Ordinal))
+                        else if (modFile.EndsWith(".scheme", StringComparison.Ordinal) || modFile.EndsWith(".imageset", StringComparison.Ordinal))
                         {
                             if (QuickBmsUnpacker.Unpack(new string[] { "gui" }))
                             {
-                                SchemeHandler.AddToScheme(modFile, internalName);
+                                XmlHandler.AddToScheme(modFile, internalName);
                             }
                         }
                         else if (!modFile.EndsWith(".txt", StringComparison.OrdinalIgnoreCase) && !modFile.EndsWith(".zip", StringComparison.OrdinalIgnoreCase)) // this is some other file
@@ -69,7 +69,7 @@ namespace FVModSync
                     Console.WriteLine();
                     CsvHandler.CreateGameFilesFromTables();
                     ListHandler.CreateFilesFromLists();
-                    SchemeHandler.CreateFilesFromSchemes();
+                    XmlHandler.CreateFilesFromXml();
                     AssignmentListHandler.CreateFilesFromLists();
                     ArrayHandler.CreateFilesFromLists();
 

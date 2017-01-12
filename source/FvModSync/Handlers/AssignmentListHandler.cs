@@ -57,7 +57,7 @@
                 var internalName = assignmentList.Key;
                 var listEntries = assignmentList.Value;
 
-                if (listEntries.Any()) // dont write empty lists
+                if (listEntries.Any())
                 {
                     string gameFilePath = Config.GameFilePrefix + internalName;
                     GenericFileHandler.BackupIfExists(gameFilePath);

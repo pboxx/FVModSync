@@ -5,16 +5,21 @@ namespace FVModSync.Configuration
     public class InternalConfig
     {
         public const string AppVersion = "0.2.2beta";
-        public const string VersionBlurb = "FVModSync" + AppVersion + "\nMod installer for Life is Feudal: Forest Village\n(c) pbox 2016\nPublished under the GPLv3 https://www.gnu.org/licenses/gpl-3.0.txt \n";
-        public const string InternalLuaIncludePath = @"\scripts\include.lua";
-        public const string InternalLuaConfigPath =  @"\scripts\config.lua";
-        public const string IgnoreCsvFieldString = "fvsm:ignore";
-        public static readonly string[] modDefaults = { @"\scripts\common\live\Worker_dressOptions.lua", @"\scripts\common\live\Worker_boozeOptions.lua" };
+        public const string VersionBlurb = "FVModSync" + AppVersion + "\nMod installer for Life is Feudal: Forest Village\n(c) pbox 2016\nPublished under the GPLv3 https://www.gnu.org/licenses/gpl-3.0.txt \n\n";
+        public static readonly string[] PakNames = { "cfg", @"scripts\core" };
+        public const string InternalLuaInitPath = @"scripts\core\init.lua";
+        public const string InternalLuaConfigPath =  @"scripts\core\config.lua";
+        public const string IgnoreCsvFieldString = @"fvsm:ignore";
+        public static readonly string[] modDefaultArrays = {    @"scripts\mods\_defaults\live\Worker_boozeOptions.lua", 
+                                                                @"scripts\mods\_defaults\live\Worker_dressOptions.lua",
+                                                                @"scripts\mods\_defaults\live\Worker_toolOptions.lua",
+                                                                @"scripts\mods\_defaults\buildings\SawmillSimple_craftRecipes.lua",
+                                                           };
     }
 
     public sealed class ExternalConfig
     {
-        private static string currentGameVersion = "0.0.6035";
+        private static string currentGameVersion = "0.0.6042";
         private static string currentGameFilePrefix = "..";
         private static string currentGameFileBackupSuffix = ".backup";
         private static string currentExportFolderName = "FVModSync_exportedFiles";

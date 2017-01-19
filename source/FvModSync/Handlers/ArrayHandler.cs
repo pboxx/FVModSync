@@ -12,14 +12,14 @@
 
         public static void AddToArray(string sourceFilePath, string internalName)
         {
-            if (InternalConfig.modDefaults.Contains(internalName))
+            if (InternalConfig.modDefaultArrays.Contains(internalName))
             {
                 string modDefaultFilePath = ExternalConfig.ModsSubfolderName + @"\" + ExternalConfig.ModDefaultsSubfolderName + internalName;
 
                 if (!File.Exists(modDefaultFilePath))
                 {
                     Console.WriteLine();
-                    Console.WriteLine("ERROR: Mod default {0} not found. File ignored. Proceed with caution!", modDefaultFilePath);
+                    Console.WriteLine("ERROR: Mod default {0} not found. File ignored: {1}. Proceed with caution!", modDefaultFilePath, sourceFilePath);
                     Console.WriteLine();
                 }
                 else
@@ -63,7 +63,10 @@
                     }
                 }
             }
-            Console.WriteLine("Add to array {0}: {1}", internalName, sourceFilePath);
+            if (ExternalConfig.ConsoleVerbosity != "quiet")
+            {
+                Console.WriteLine("Add to array {0}: {1}", internalName, sourceFilePath);
+            }
         }
 
         public static void CreateFilesFromArrays()

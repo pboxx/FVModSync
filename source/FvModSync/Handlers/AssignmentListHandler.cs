@@ -47,7 +47,10 @@
                     }
                 }
             }
-            Console.WriteLine("Add to assignment list {0}: {1}", internalName, sourceFilePath);
+            if (ExternalConfig.ConsoleVerbosity != "quiet")
+            {
+                Console.WriteLine("Add to {0}: {1}", internalName, sourceFilePath);
+            }
         }
 
         public static void CreateFilesFromLists()
@@ -59,7 +62,7 @@
 
                 if (listEntries.Any())
                 {
-                    string gameFilePath = ExternalConfig.GameFilePrefix + internalName;
+                    string gameFilePath = ExternalConfig.GameFilePrefix + @"\" + internalName;
                     GenericFileHandler.BackupIfExists(gameFilePath);
 
                     string targetDir = ExternalConfig.GameFilePrefix + Path.GetDirectoryName(internalName);
@@ -69,6 +72,7 @@
                     {
                         using (StreamWriter writer = new StreamWriter(gameFileStream))
                         {
+                            // TODO fix this kludge
                             writer.WriteLine("config =");
                             writer.WriteLine("{");
                             foreach (KeyValuePair<string, string> listEntry in listEntries)
@@ -78,7 +82,7 @@
                             writer.WriteLine("}");
                         }
                     }
-                    Console.WriteLine("Write assignment list to game files: {0}", internalName);
+                    Console.WriteLine("Write to game files: {0}", internalName);
                 }
             }
         }

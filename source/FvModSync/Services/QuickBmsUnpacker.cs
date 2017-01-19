@@ -32,15 +32,16 @@ namespace FVModSync.Services
                 // TODO find less pedestrian way (than just "if dir exists") to determine whether exports are valid
 
                 string pakPath = ExternalConfig.GameFilePrefix + @"\" + pakName + ".pak";
-                string pakExportDir = ExternalConfig.ExportFolderName + @"\" + pakName;
+                string pakExportPath = ExternalConfig.ExportFolderName + @"\" + pakName;
+                string pakExportDir = Path.GetDirectoryName(pakExportPath);
 
-                if (!Directory.Exists(pakExportDir)) 
+                if (!Directory.Exists(pakExportPath)) 
                 {
-                    Console.WriteLine("Exporting {0} from game files to {1} ... ", pakPath, ExternalConfig.ExportFolderName);
+                    Console.WriteLine("Exporting {0} from game files to {1} ... ", pakPath, pakExportDir);
 
                     Process quickbms = new Process();
                     quickbms.StartInfo.FileName = @"quickbms\quickbms.exe";
-                    quickbms.StartInfo.Arguments = @"-o -q -Y -Q " + scriptPath + " " + pakPath + " " + ExternalConfig.ExportFolderName;
+                    quickbms.StartInfo.Arguments = @"-o -q -Y -Q " + scriptPath + " " + pakPath + " " + pakExportDir;
                     quickbms.StartInfo.UseShellExecute = false;
                     quickbms.StartInfo.RedirectStandardInput = true;
                     quickbms.Start();
@@ -54,7 +55,10 @@ namespace FVModSync.Services
                 }
                 else
                 {
-                    Console.WriteLine("Export directory {0} exists ", pakExportDir);
+                    if (ExternalConfig.ConsoleVerbosity == "verbose")
+                    {
+                        Console.WriteLine("Export directory {0} exists ", pakExportPath);
+                    }
                 }
             }
             Console.WriteLine();

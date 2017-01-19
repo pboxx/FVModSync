@@ -12,18 +12,37 @@
 
         public static void InitList(string internalName)
         {
-            GenericFileHandler.Init(AddToList, internalName);
+            GenericFileHandler.Init(AddFileContentsToList, internalName);
         }
 
-        public static void AddToList(string sourceFilePath, string internalName)
-        {   
-            if (!lists.ContainsKey(internalName)) 
+        public static List<string> GetList(string internalName)
+        {
+            if (!lists.ContainsKey(internalName))
             {
                 lists.Add(internalName, new List<string>());
-                InitList(internalName); 
+                InitList(internalName);
             }
-
             List<string> list = lists[internalName];
+            return list;
+        }
+
+        public static void AddEntryToList(string internalName, string entry)
+        {
+            List<string> list = GetList(internalName);
+
+            if (!list.Contains(entry))
+            {
+                list.Add(entry);
+            }
+            if (ExternalConfig.ConsoleVerbosity != "quiet")
+            {
+                Console.WriteLine("Add entry to {0}: {1}", internalName, entry);
+            } 
+        }
+
+        public static void AddFileContentsToList(string sourceFilePath, string internalName)
+        {
+            List<string> list = GetList(internalName);
 
             using (Stream stream = File.Open(sourceFilePath, FileMode.Open))
             {
@@ -40,7 +59,10 @@
                     }
                 }
             }
-            Console.WriteLine("Add to list {0}: {1}", internalName, sourceFilePath);
+            if (ExternalConfig.ConsoleVerbosity != "quiet") 
+            {
+                Console.WriteLine("Add to {0}: {1}", internalName, sourceFilePath);
+            } 
         }
 
         public static void CreateFilesFromLists()
@@ -52,10 +74,10 @@
 
                 if (listContent.Any()) // dont write empty arrays
                 {
-                    string gameFilePath = ExternalConfig.GameFilePrefix + internalName;
+                    string gameFilePath = ExternalConfig.GameFilePrefix + @"\" + internalName;
                     GenericFileHandler.BackupIfExists(gameFilePath);
 
-                    string targetDir = ExternalConfig.GameFilePrefix + Path.GetDirectoryName(internalName);
+                    string targetDir = ExternalConfig.GameFilePrefix + @"\" + Path.GetDirectoryName(internalName);
                     Directory.CreateDirectory(targetDir);
 
                     using (Stream gameFileStream = File.Open(gameFilePath, FileMode.Create))
@@ -70,7 +92,7 @@
                             }
                         }
                     }
-                    Console.WriteLine("Write list to game files: {0}", internalName);
+                    Console.WriteLine("Write to game files: {0}", internalName);
                 }
             }
         }

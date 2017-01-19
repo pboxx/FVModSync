@@ -7,17 +7,17 @@
 
     public class ConfigReader
     {
-        private const string ConfigFileName = "FVModSync.cfg";
+        private const string ConfigFileName = "FVModSync_Configuration.xml";
 
         public static void InitConfig()
         {
             if (!File.Exists(ConfigFileName))
             {
-                Console.WriteLine("FVModSync.cfg not found; using default values");
+                Console.WriteLine(ConfigFileName + " not found; using default values");
             }
             else
             {
-                XDocument xconfig = XDocument.Load("FVModSync.cfg");
+                XDocument xconfig = XDocument.Load(ConfigFileName);
 
                 ExternalConfig.GameVersion = xconfig.Root.Element("gameVersion").Value;
                 ExternalConfig.GameFilePrefix = xconfig.Root.Element("gameFilePrefix").Value;

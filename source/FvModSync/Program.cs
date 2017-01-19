@@ -19,55 +19,58 @@ namespace FVModSync
         public static void Main(string[] args)
         {
             // TODO figure out actual game version + reexport if necessary
-            ConfigReader.InitConfig();
             Console.WriteLine(InternalConfig.VersionBlurb);
-
+            ConfigReader.InitConfig();
             try
             {
-                string[] pakNames = { "cfg", "scripts" };
+                string[] pakNames = InternalConfig.PakNames;
                 string[] modFiles = GenericFileHandler.SearchModFiles();
                 List<string> csvRecognisedPaths = ExternalConfig.FileLocations;
 
                 if (QuickBmsUnpacker.Unpack(pakNames))
                 {
-                    foreach (string modFile in modFiles)
+                    foreach (string modFilePath in modFiles)
                     {
-                        string internalName = modFile.GetInternalName();
+                        string internalName = modFilePath.GetInternalName();
 
-                        if (modFile.EndsWith(".csv", StringComparison.Ordinal))
+                        if (modFilePath.EndsWith(".csv", StringComparison.Ordinal))
                         {
                             // is this a game file we handle
                             if (csvRecognisedPaths.Contains(internalName))
                             {
-                                CsvHandler.ParseCsvToTable(modFile, internalName);
+                                CsvHandler.ParseCsvToTable(modFilePath, internalName);
                             }
                             else // this is a custom csv
                             {
-                                GenericFileHandler.CopyFileFromModDir(modFile);
+                                GenericFileHandler.CopyFileFromModDir(modFilePath);
                             }
                         }
-                        else if (internalName == InternalConfig.InternalLuaIncludePath)
+                        else if (internalName == InternalConfig.InternalLuaInitPath)
                         {
-                            ListHandler.AddToList(modFile, internalName);
+                            ListHandler.AddFileContentsToList(modFilePath, internalName);
                         }
                         else if (internalName == InternalConfig.InternalLuaConfigPath)
                         {
-                            AssignmentListHandler.AddToAssignmentList(modFile, internalName);
+                            AssignmentListHandler.AddToAssignmentList(modFilePath, internalName);
                         }
-                        else if (InternalConfig.modDefaults.Contains(internalName))
+                        else if (InternalConfig.modDefaultArrays.Contains(internalName))
                         {
-                            ArrayHandler.AddToArray(modFile, internalName);
+                            ArrayHandler.AddToArray(modFilePath, internalName);
                         }
-                        else if (modFile.EndsWith(".scheme", StringComparison.Ordinal) || modFile.EndsWith(".imageset", StringComparison.Ordinal))
+                        else if (modFilePath.EndsWith(".lua"))
+                        {
+                            GenericFileHandler.CopyScriptFromModDir(modFilePath);
+                        }
+                        else if (modFilePath.EndsWith(".scheme", StringComparison.Ordinal) || modFilePath.EndsWith(".imageset", StringComparison.Ordinal))
                         {
                             if (QuickBmsUnpacker.Unpack(new string[] { "gui" }))
                             {
-                                XmlHandler.AddToScheme(modFile, internalName);
+                                XmlHandler.AddToScheme(modFilePath, internalName);
                             }
                         }
-                        else if (!modFile.EndsWith(".txt", StringComparison.OrdinalIgnoreCase) && !modFile.EndsWith(".zip", StringComparison.OrdinalIgnoreCase)) // this is some other file
+                        else if (!modFilePath.EndsWith(".txt", StringComparison.OrdinalIgnoreCase) && !modFilePath.EndsWith(".zip", StringComparison.OrdinalIgnoreCase)) // this is some other file
                         {
-                            GenericFileHandler.CopyFileFromModDir(modFile);
+                            GenericFileHandler.CopyFileFromModDir(modFilePath);
                         }
                     }
                     Console.WriteLine();

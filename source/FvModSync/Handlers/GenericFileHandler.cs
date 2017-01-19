@@ -4,6 +4,7 @@
     using FVModSync.Extensions;
     using System;
     using System.IO;
+    using System.Linq;
 
     public class GenericFileHandler
     {
@@ -25,10 +26,12 @@
 
                 Array.Sort(modFiles, StringComparer.InvariantCulture);
 
-                Console.WriteLine("Modded files found:");
-                foreach (string modFile in modFiles)  { Console.WriteLine(modFile); }
-                Console.WriteLine();
-
+                if (ExternalConfig.ConsoleVerbosity != "quiet")
+                {
+                    Console.WriteLine("Modded files found:");
+                    foreach (string modFile in modFiles) { Console.WriteLine(modFile); }
+                    Console.WriteLine();
+                }
                 return modFiles;
             }
             else
@@ -39,52 +42,92 @@
 
         public static void Init(Action<string, string> AddToTarget, string internalName)
         {
-            string exportedFilePath = ExternalConfig.ExportFolderName + internalName;
-            string gameFilePath = ExternalConfig.GameFilePrefix + internalName;
+            string exportedFilePath = ExternalConfig.ExportFolderName + @"\" + internalName;
+            string gameFilePath = ExternalConfig.GameFilePrefix + @"\" + internalName;
 
             if (File.Exists(gameFilePath))
             {
-                Console.WriteLine();
-                Console.WriteLine("Init from game files: {0} ...", internalName);
+                if (ExternalConfig.ConsoleVerbosity != "quiet")
+                {
+                    Console.WriteLine();
+                    Console.WriteLine("Init from game files: {0} ...", internalName);
+                }
                 AddToTarget(gameFilePath, internalName);
             }
             else
             {
                 if (!File.Exists(exportedFilePath))
                 {
-                    throw new FileNotFoundException("Exported file {0} not found. Try deleting the FVModSync_exportedFiles folder and running the program again", exportedFilePath);
+                    throw new FileNotFoundException(string.Format("Exported file {0} not found. Make sure the mod you're installing is compatible with the game version you have. If it is, try deleting the {1} folder and running the program again", exportedFilePath, ExternalConfig.ExportFolderName));
                 }
-                Console.WriteLine();
-                Console.WriteLine("Init from exported files: {0} ...", internalName);
+                if (ExternalConfig.ConsoleVerbosity != "quiet")
+                {
+                    Console.WriteLine();
+                    Console.WriteLine("Init from exported files: {0} ...", internalName);
+                }
                 AddToTarget(exportedFilePath, internalName);
             }
         }
 
-        public static void CopyFileFromModDir(string modFile)
+        public static void CopyFileFromModDir(string modFilePath)
         {
-            string targetFile = ExternalConfig.GameFilePrefix + modFile.GetInternalName();
+            string targetFilePath = ExternalConfig.GameFilePrefix + @"\" + modFilePath.GetInternalName();
 
-            if (File.Exists(targetFile))
+            DoCopy(modFilePath, targetFilePath);
+        }
+
+        public static void CopyScriptFromModDir(string modFilePath)
+        {
+            string internalName = modFilePath.GetInternalScriptName();
+            string targetModDirName = internalName.Split('\\').First().CleanupLuaOperators();
+            string targetFileName = Path.GetFileName(internalName);
+            string targetFilePath = ExternalConfig.GameFilePrefix + @"\scripts\mods\" + targetModDirName + @"\" + targetFileName;
+
+            DoCopy(modFilePath, targetFilePath);
+
+            string requireMe = @"requireMod('" + targetModDirName + "')\r\n";
+            ListHandler.AddEntryToList(InternalConfig.InternalLuaInitPath, requireMe);
+        }
+
+        private static void DoCopy(string sourceFilePath, string targetFilePath)
+        {
+            if (File.Exists(targetFilePath))
             {
-                FileInfo modFileInfo = new FileInfo(modFile);
-                FileInfo targetFileInfo = new FileInfo(targetFile);
+                FileInfo modFileInfo = new FileInfo(sourceFilePath);
+                FileInfo targetFileInfo = new FileInfo(targetFilePath);
 
                 if (modFileInfo.LastWriteTime > targetFileInfo.LastWriteTime)
                 {
-                    File.Delete(targetFile);
-                    File.Copy(modFile, targetFile);
-                    Console.WriteLine();
-                    Console.WriteLine("Copy file {0} to {1} (overwrite)", modFile, targetFile);
+                    File.Delete(targetFilePath);
+                    File.Copy(sourceFilePath, targetFilePath);
+
+                    if (ExternalConfig.ConsoleVerbosity != "quiet")
+                    {
+                        Console.WriteLine();
+                        Console.WriteLine("Copy file {0} to {1} (overwrite)", sourceFilePath, targetFilePath);
+                    }
+                }
+                else
+                {
+                    if (ExternalConfig.ConsoleVerbosity == "verbose")
+                    {
+                        Console.WriteLine();
+                        Console.WriteLine("File {0} has the same timestamp as target {1}; file ignored", sourceFilePath, targetFilePath);
+                    }
                 }
             }
             else
             {
-                string targetDir = Path.GetDirectoryName(targetFile);
+                string targetDir = Path.GetDirectoryName(targetFilePath);
 
                 Directory.CreateDirectory(targetDir);
-                File.Copy(modFile, targetFile);
-                Console.WriteLine();
-                Console.WriteLine("Copy file {0} to {1} (new)", modFile, targetFile);
+                File.Copy(sourceFilePath, targetFilePath);
+
+                if (ExternalConfig.ConsoleVerbosity != "quiet")
+                {
+                    Console.WriteLine();
+                    Console.WriteLine("Copy file {0} to {1} (new)", sourceFilePath, targetFilePath);
+                }
             }
         }
     }

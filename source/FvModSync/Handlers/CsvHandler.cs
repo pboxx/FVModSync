@@ -12,6 +12,7 @@
     {
         private static readonly Dictionary<string, Dictionary<string, Dictionary<string, string>>> libraryOfEntries = new Dictionary<string, Dictionary<string, Dictionary<string, string>>>();
         private static readonly Dictionary<string, Dictionary<string, Dictionary<string, bool>>> libraryOfModdedEntries = new Dictionary<string, Dictionary<string, Dictionary<string, bool>>>();
+        private static readonly List<string> csvRecognisedPaths = ExternalConfig.FileLocations;
 
         public static void InitTable(string internalName)
         {
@@ -20,8 +21,6 @@
 
         public static void ParseCsvToTable(string sourceFilePath, string internalName) 
         {
-            List<string> csvRecognisedPaths = ExternalConfig.FileLocations;
-
             if (!libraryOfEntries.ContainsKey(internalName))
             {
                 libraryOfEntries.Add(internalName, new Dictionary<string, Dictionary<string, string>>());
@@ -40,7 +39,10 @@
                 isMod = true;
             }
 
-            Console.WriteLine("Parse to {0}: {1} ...", internalName, sourceFilePath);
+            if (ExternalConfig.ConsoleVerbosity != "quiet")
+            {
+                Console.WriteLine("Parse to {0}: {1} ...", internalName, sourceFilePath);
+            }
 
             using (Stream externalFile = File.Open(sourceFilePath, FileMode.Open))
             {
@@ -52,7 +54,7 @@
 
                     string[] header = parser.ReadFields();
 
-                    if (SetOrAddHeader(internalName, "fvms_header", header, isMod))
+                    if (SetOrAddHeader(sourceFilePath, internalName, "fvms_header", header, isMod))
                     {
                         while (!parser.EndOfData)
                         {
@@ -64,7 +66,7 @@
                                 if (record.Length != header.Length)
                                 {
                                     Console.WriteLine();
-                                    Console.WriteLine("ERROR: {0} -- Record length ({1}) does not match header length ({2}); record ignored", recordName, record.Length, header.Length);
+                                    Console.WriteLine("ERROR: \"{0}\" in file {1} -- Record length ({2}) does not match header length ({3}); record ignored", recordName, sourceFilePath, record.Length, header.Length);
                                 }
 
                                 else
@@ -95,7 +97,7 @@
                                     {
                                         string DirtyNames = String.Join(", ", DirtyWords.ToArray());
                                         Console.WriteLine();
-                                        Console.WriteLine("CONFLICTS: Field(s) {0} in record \"{1}\" already exist", String.Join(", ", DirtyWords.ToArray()), recordName);
+                                        Console.WriteLine("CONFLICTS: Field(s) {0} in record \"{1}\" already exist -- File: {2}", String.Join(", ", DirtyWords.ToArray()), recordName, sourceFilePath);
                                     }
                                 }
                             }
@@ -110,7 +112,7 @@
             }
         }
 
-        public static bool SetOrAddHeader(string internalName, string recordName, string[] header, bool isMod)
+        public static bool SetOrAddHeader(string sourceFilePath, string internalName, string recordName, string[] header, bool isMod)
         {
             for (int i = 0; i < header.Length; i++)
             {
@@ -135,7 +137,7 @@
                     if (isMod)
                     {
                         Console.WriteLine();
-                        Console.WriteLine("ERROR: Attempt to add unknown header field \"{0}\"; file ignored", fieldName);
+                        Console.WriteLine("ERROR -- File {0}: Attempt to add unknown header field \"{1}\"; file ignored", sourceFilePath, fieldName);
                         Console.WriteLine();
                         return false;
                     }
@@ -162,13 +164,20 @@
             if (record.ContainsKey(fieldName))
             {
                 record[fieldName] = fieldValue;
-                // Console.WriteLine("Update field {0}: {1}", fieldName, fieldValue);
+
+                if (ExternalConfig.ConsoleVerbosity == "debug")
+                {
+                    Console.WriteLine("Update field {0}: {1}", fieldName, fieldValue);
+                }
             }
             else
             {
                 record.Add(fieldName, fieldValue);
 
-                // Console.WriteLine("Add new field {0}: {1}", fieldName, fieldValue);
+                if (ExternalConfig.ConsoleVerbosity == "debug")
+                {
+                    Console.WriteLine("Add new field {0}: {1}", fieldName, fieldValue);
+                }
             }
         }
 
@@ -179,15 +188,15 @@
                 var internalName = table.Key;
                 var tableContent = table.Value;
                 var recordNames = tableContent.Keys;
-                var records = tableContent.Values; 
-                
-                string gameFilePath = ExternalConfig.GameFilePrefix + internalName;
+                var records = tableContent.Values;
+
+                string gameFilePath = ExternalConfig.GameFilePrefix + @"\" + internalName;
                 GenericFileHandler.BackupIfExists(gameFilePath);
 
                 string targetDir = ExternalConfig.GameFilePrefix + @"\" + Path.GetDirectoryName(internalName);
-                Directory.CreateDirectory(targetDir); 
+                Directory.CreateDirectory(targetDir);
 
-                using (Stream gameFile = File.Open(".." + internalName, FileMode.Create))
+                using (Stream gameFile = File.Open(gameFilePath, FileMode.Create))
                 {
                     using (StreamWriter writer = new StreamWriter(gameFile))
                     {

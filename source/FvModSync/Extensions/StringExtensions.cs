@@ -19,10 +19,30 @@
 		public static string GetInternalName(this string path)
 		{
 			string[] pathParts = path.Split('\\').Skip(2).ToArray();
-			string internalName = "\\" + string.Join("\\", pathParts);
+			string internalName = string.Join("\\", pathParts);
 
 			return internalName;
 		}
+
+        public static string GetInternalScriptName(this string path)
+        {
+            string[] pathParts = path.Split('\\').Skip(1).ToArray();
+            string internalName = string.Join("\\", pathParts);
+
+            return internalName;
+        }
+
+        public static string CleanupLuaOperators(this string input)
+        {
+            string[] doNotUseMe = { "-", ".", "*", "<", ">", "+", "=" };
+            string clean = input;
+
+            foreach (string doNotUse in doNotUseMe) {
+                clean = clean.Replace(doNotUse, "_");
+            }
+
+            return clean;
+        }
 
         public static string WrapDelimited(this string input)
         {

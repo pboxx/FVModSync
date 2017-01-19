@@ -39,7 +39,10 @@
 
             scheme.Root.Add(fileElements);
 
-            Console.WriteLine("Add to scheme {0}: {1}", internalName, sourceFilePath);
+            if (ExternalConfig.ConsoleVerbosity != "quiet")
+            {
+                Console.WriteLine("Add to scheme {0}: {1}", internalName, sourceFilePath);
+            } 
         }
 
         public static void CreateFilesFromXml()

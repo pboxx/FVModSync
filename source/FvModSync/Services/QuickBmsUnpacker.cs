@@ -7,7 +7,7 @@ namespace FVModSync.Services
 
     public class QuickBmsUnpacker
     {
-        public static void Unpack(string[] pakNames)
+        public static bool Unpack(string[] pakNames)
         {
             string scriptPath = "";
 
@@ -31,33 +31,38 @@ namespace FVModSync.Services
             {
                 // TODO find less pedestrian way (than just "if dir exists") to determine whether exports are valid
 
-                string pakPath = Config.GameFilePrefix + @"\" + pakName + ".pak";
-                string pakExportDir = Config.ExportFolderName + @"\" + pakName;
+                string pakPath = ExternalConfig.GameFilePrefix + @"\" + pakName + ".pak";
+                string pakExportPath = ExternalConfig.ExportFolderName + @"\" + pakName;
+                string pakExportDir = Path.GetDirectoryName(pakExportPath);
 
-                if (!Directory.Exists(pakExportDir)) 
+                if (!Directory.Exists(pakExportPath)) 
                 {
-                    Console.WriteLine("Exporting {0} from game files to {1} ... ", pakPath, Config.ExportFolderName);
+                    Console.WriteLine("Exporting {0} from game files to {1} ... ", pakPath, pakExportDir);
 
                     Process quickbms = new Process();
                     quickbms.StartInfo.FileName = @"quickbms\quickbms.exe";
-                    quickbms.StartInfo.Arguments = @"-o -q -Y -Q " + scriptPath + " " + pakPath + " " + Config.ExportFolderName;
+                    quickbms.StartInfo.Arguments = @"-o -q -Y -Q " + scriptPath + " " + pakPath + " " + pakExportDir;
                     quickbms.StartInfo.UseShellExecute = false;
                     quickbms.StartInfo.RedirectStandardInput = true;
                     quickbms.Start();
                     quickbms.StandardInput.WriteLine("\n");
-                    quickbms.WaitForExit(1000);
+                    quickbms.WaitForExit();
 
                     if (quickbms.ExitCode != 0)
                     {
                         throw new InvalidOperationException(string.Format("quickbms exited with code {0} -- please check that it is set up correctly.", quickbms.ExitCode));
-                    }
+                    }            
                 }
                 else
                 {
-                    Console.WriteLine("Export directory {0} exists ", pakExportDir);
+                    if (ExternalConfig.ConsoleVerbosity == "verbose")
+                    {
+                        Console.WriteLine("Export directory {0} exists ", pakExportPath);
+                    }
                 }
             }
             Console.WriteLine();
+            return true;
         }
     }
 }

@@ -1,48 +1,30 @@
 ﻿namespace FVModSync.Handlers
 {
     using FVModSync.Configuration;
+    using FVModSync.Extensions;
     using System;
     using System.Collections.Generic;
     using System.IO;
     using System.Linq;
 
-    public class ListHandler
+    public class AssignmentListHandler
     {
-        private static readonly Dictionary<string, List<string>> lists = new Dictionary<string, List<string>>();
+        private static readonly Dictionary<string, Dictionary<string, string>> assignmentLists = new Dictionary<string, Dictionary<string, string>>();
 
         public static void InitList(string internalName)
         {
-            GenericFileHandler.Init(AddFileContentsToList, internalName);
+            GenericFileHandler.Init(AddToAssignmentList, internalName);
         }
 
-        public static List<string> GetList(string internalName)
+        public static void AddToAssignmentList(string sourceFilePath, string internalName)
         {
-            if (!lists.ContainsKey(internalName))
+            if (!assignmentLists.ContainsKey(internalName))
             {
-                lists.Add(internalName, new List<string>());
+                assignmentLists.Add(internalName, new Dictionary<string, string>());
                 InitList(internalName);
             }
-            List<string> list = lists[internalName];
-            return list;
-        }
 
-        public static void AddEntryToList(string internalName, string entry)
-        {
-            List<string> list = GetList(internalName);
-
-            if (!list.Contains(entry))
-            {
-                list.Add(entry);
-            }
-            if (ExternalConfig.ConsoleVerbosity != "quiet")
-            {
-                Console.WriteLine("Add entry to {0}: {1}", internalName, entry);
-            } 
-        }
-
-        public static void AddFileContentsToList(string sourceFilePath, string internalName)
-        {
-            List<string> list = GetList(internalName);
+            Dictionary<string, string> assignmentList = assignmentLists[internalName];
 
             using (Stream stream = File.Open(sourceFilePath, FileMode.Open))
             {
@@ -53,26 +35,32 @@
 
                 foreach (string contentLine in contentLines)
                 {
-                    if (!list.Contains(contentLine))
+                    if (!contentLine.Trim().Equals("}"))
                     {
-                        list.Add(contentLine);
+                        var parts = contentLine.Split('=');
+                        var key = parts[0].Trim();
+                        if (parts.Length > 1 && key != "config")
+                        {
+                            var val = parts[1].Trim();
+                            assignmentList.SetValue(key, val);
+                        }
                     }
                 }
             }
-            if (ExternalConfig.ConsoleVerbosity != "quiet") 
+            if (ExternalConfig.ConsoleVerbosity != "quiet")
             {
                 Console.WriteLine("Add to {0}: {1}", internalName, sourceFilePath);
-            } 
+            }
         }
 
         public static void CreateFilesFromLists()
         {
-            foreach (KeyValuePair<string, List<string>> list in lists)
+            foreach (KeyValuePair<string, Dictionary<string, string>> assignmentList in assignmentLists)
             {
-                var internalName = list.Key;
-                var listContent = list.Value;
+                var internalName = assignmentList.Key;
+                var listEntries = assignmentList.Value;
 
-                if (listContent.Any()) // dont write empty arrays
+                if (listEntries.Any())
                 {
                     string gameFilePath = ExternalConfig.GameFilePrefix + @"\" + internalName;
                     GenericFileHandler.BackupIfExists(gameFilePath);
@@ -84,12 +72,14 @@
                     {
                         using (StreamWriter writer = new StreamWriter(gameFileStream))
                         {
-                            string[] contentLines = listContent.ToArray();
-
-                            foreach (string contentLine in contentLines)
+                            // TODO fix this kludge
+                            writer.WriteLine("config =");
+                            writer.WriteLine("{");
+                            foreach (KeyValuePair<string, string> listEntry in listEntries)
                             {
-                                writer.WriteLine(contentLine);
+                                writer.WriteLine("    " + listEntry.Key + " = " + listEntry.Value);
                             }
+                            writer.WriteLine("}");
                         }
                     }
                     Console.WriteLine("Write to game files: {0}", internalName);

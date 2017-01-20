@@ -7,38 +7,30 @@
 
     public class GenericFileHandler
     {
-
         public static void BackupIfExists(string filePath)
         {
             if (File.Exists(filePath))
             {
-                string backupFilePath = filePath + ".backup";
-
+                string backupFilePath = filePath + ExternalConfig.GameFileBackupSuffix;
                 File.Delete(backupFilePath);
                 File.Copy(filePath, backupFilePath);
-
-                // Console.WriteLine("File exists -- create backup: {0}", filePath);
             }
         }
 
         public static string[] SearchModFiles()
         {
-            if (Directory.Exists(Config.ModsSubfolderName))
+            if (Directory.Exists(ExternalConfig.ModsSubfolderName))
             {
-                Console.WriteLine();
-
-                string[] modFiles = Directory.GetFiles(Config.ModsSubfolderName, "*", SearchOption.AllDirectories);
+                string[] modFiles = Directory.GetFiles(ExternalConfig.ModsSubfolderName, "*", SearchOption.AllDirectories);
 
                 Array.Sort(modFiles, StringComparer.InvariantCulture);
 
-                Console.WriteLine("Modded files found:");
-
-                foreach (string modFile in modFiles)
+                if (ExternalConfig.ConsoleVerbosity != "quiet")
                 {
-                    Console.WriteLine(modFile);
+                    Console.WriteLine("Modded files found:");
+                    foreach (string modFile in modFiles) { Console.WriteLine(modFile); }
+                    Console.WriteLine();
                 }
-                Console.WriteLine();
-
                 return modFiles;
             }
             else
@@ -47,37 +39,101 @@
             }
         }
 
-        public static void CopyFileFromModDir(string modFile)
+        public static void Init(Action<string, string> AddToTarget, string internalName)
         {
-            string targetFile = Config.GameFilePrefix + modFile.GetInternalName();
+            string exportedFilePath = ExternalConfig.ExportFolderName + @"\" + internalName;
+            string gameFilePath = ExternalConfig.GameFilePrefix + @"\" + internalName;
 
-            // TODO decide how we deal with existing files here .. backup them all?
-
-            if (File.Exists(targetFile))
+            if (File.Exists(gameFilePath))
             {
-                FileInfo modFileInfo = new FileInfo(modFile);
-                FileInfo targetFileInfo = new FileInfo(targetFile);
+                if (ExternalConfig.ConsoleVerbosity != "quiet")
+                {
+                    Console.WriteLine();
+                    Console.WriteLine("Init from game files: {0} ...", internalName);
+                }
+                AddToTarget(gameFilePath, internalName);
+            }
+            else
+            {
+                if (!File.Exists(exportedFilePath))
+                {
+                    throw new FileNotFoundException(string.Format("Exported file {0} not found. Make sure the mod you're installing is compatible with the game version you have. If it is, try deleting the {1} folder and running the program again", exportedFilePath, ExternalConfig.ExportFolderName));
+                }
+                if (ExternalConfig.ConsoleVerbosity != "quiet")
+                {
+                    Console.WriteLine();
+                    Console.WriteLine("Init from exported files: {0} ...", internalName);
+                }
+                AddToTarget(exportedFilePath, internalName);
+            }
+        }
+
+        public static void CopyFileFromModDir(string modFilePath)
+        {
+            string targetFilePath = ExternalConfig.GameFilePrefix + @"\" + modFilePath.GetInternalName();
+
+            DoCopy(modFilePath, targetFilePath, false);
+        }
+
+        public static void CopyScriptFromModDir(string modFilePath)
+        {
+            string internalName = modFilePath.GetInternalScriptName();
+            string targetModDirName = modFilePath.GetModDirName();
+
+            string targetFilePath = ExternalConfig.GameFilePrefix + @"\scripts\mods\" + targetModDirName + @"\" + internalName;
+
+            DoCopy(modFilePath, targetFilePath, true);
+
+
+        }
+
+        private static void DoCopy(string sourceFilePath, string targetFilePath, bool AddReqToInit)
+        {
+            if (File.Exists(targetFilePath))
+            {
+                FileInfo modFileInfo = new FileInfo(sourceFilePath);
+                FileInfo targetFileInfo = new FileInfo(targetFilePath);
 
                 if (modFileInfo.LastWriteTime > targetFileInfo.LastWriteTime)
                 {
-                    File.Delete(targetFile);
-                    File.Copy(modFile, targetFile);
-                    Console.WriteLine();
-                    Console.WriteLine("Copy file {0} to {1} (overwrite)", modFile, targetFile);
+                    File.Delete(targetFilePath);
+                    File.Copy(sourceFilePath, targetFilePath);
+
+                    if (ExternalConfig.ConsoleVerbosity != "quiet")
+                    {
+                        Console.WriteLine();
+                        Console.WriteLine("Copy file {0} to {1} (overwrite)", sourceFilePath, targetFilePath);
+                    }
                 }
                 else
                 {
-                    Console.WriteLine("File {0} and {1} have identical timestamps (ignoring)", modFile, targetFile);
+                    if (ExternalConfig.ConsoleVerbosity == "verbose")
+                    {
+                        Console.WriteLine();
+                        Console.WriteLine("File {0} has the same timestamp as target {1}; file ignored", sourceFilePath, targetFilePath);
+                    }
                 }
             }
             else
             {
-                string targetDir = Path.GetDirectoryName(targetFile);
+                string targetDir = Path.GetDirectoryName(targetFilePath);
 
                 Directory.CreateDirectory(targetDir);
-                File.Copy(modFile, targetFile);
-                Console.WriteLine();
-                Console.WriteLine("Copy file {0} to {1} (new)", modFile, targetFile);
+                File.Copy(sourceFilePath, targetFilePath);
+
+                if (ExternalConfig.ConsoleVerbosity != "quiet")
+                {
+                    Console.WriteLine();
+                    Console.WriteLine("Copy file {0} to {1} (new)", sourceFilePath, targetFilePath);
+                }
+
+                if (AddReqToInit)
+                {
+                    string targetModDirName = sourceFilePath.GetModDirName();
+                    string requireMe = @"requireMod('" + targetModDirName + "')";
+                    ListHandler.AddEntryToList(InternalConfig.InternalLuaInitPath, requireMe);
+                    Console.WriteLine();
+                }
             }
         }
     }

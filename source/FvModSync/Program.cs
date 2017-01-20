@@ -1,5 +1,5 @@
 ﻿/*
-Mod installer for Life is Feudal: Forest Village
+Mod installer for Life is Feudal: Forest Village (c) pbox 2016
 Published under the GNU General Public License https://www.gnu.org/licenses/gpl-3.0.txt
 */
 
@@ -10,74 +10,84 @@ namespace FVModSync
     using FVModSync.Handlers;
     using FVModSync.Services;
     using System;
+    using System.Collections.Generic;
     using System.Linq;
 
-    /// <summary>
-    /// The main program.
-    /// </summary>
     public static class Program
     {
-        // TODO verbose switch
 
-        /// <summary>
-        /// The main entry point.
-        /// </summary>
         public static void Main(string[] args)
         {
-            Console.WriteLine(Config.Version);
-
+            // TODO figure out actual game version + reexport if necessary
+            Console.WriteLine(InternalConfig.VersionBlurb);
+            ConfigReader.InitConfig();
             try
             {
-                string[] pakNames = { "cfg", "scripts" };
-                string[] csvRecognisedPaths = ConfigReader.LoadCsvPaths();
+                string[] pakNames = InternalConfig.PakNames;
                 string[] modFiles = GenericFileHandler.SearchModFiles();
+                List<string> csvRecognisedPaths = ExternalConfig.csvFiles;
 
-                QuickBmsUnpacker.Unpack(pakNames);
-
-                foreach (string modFile in modFiles)
+                if (QuickBmsUnpacker.Unpack(pakNames))
                 {
-                    string internalName = modFile.GetInternalName();
-                    string gameFilePath = Config.GameFilePrefix + internalName;
+                    foreach (string modFilePath in modFiles)
+                    {
+                        string internalName = modFilePath.GetInternalName();
 
-                    if (modFile.EndsWith(".csv", StringComparison.Ordinal))
-                    {
-                        // is this a game file we handle
-                        if (csvRecognisedPaths.Contains(internalName))
+                        if (modFilePath.EndsWith(".csv", StringComparison.Ordinal))
                         {
-                            LibraryHandler.CopyFileToDict(modFile, internalName);
+                            // is this a game file we handle
+                            if (csvRecognisedPaths.Contains(internalName))
+                            {
+                                CsvHandler.ParseCsvToTable(modFilePath, internalName);
+                            }
+                            else // this is a custom csv
+                            {
+                                GenericFileHandler.CopyFileFromModDir(modFilePath);
+                            }
                         }
-                        else // this is a custom csv
+                        else if (internalName == InternalConfig.InternalLuaInitPath)
                         {
-                            GenericFileHandler.CopyFileFromModDir(modFile);
+                            ListHandler.AddFileContentsToList(modFilePath, internalName);
+                        }
+                        else if (internalName == InternalConfig.InternalLuaConfigPath)
+                        {
+                            AssignmentListHandler.AddToAssignmentList(modFilePath, internalName);
+                        }
+                        else if (InternalConfig.modDefaultArrays.Contains(internalName))
+                        {
+                            ArrayHandler.AddToArray(modFilePath, internalName);
+                        }
+                        else if (modFilePath.EndsWith(".lua"))
+                        {
+                            GenericFileHandler.CopyScriptFromModDir(modFilePath);
+                        }
+                        else if (modFilePath.EndsWith(".scheme", StringComparison.Ordinal) || modFilePath.EndsWith(".imageset", StringComparison.Ordinal))
+                        {
+                            if (QuickBmsUnpacker.Unpack(new string[] { "gui" }))
+                            {
+                                // adding to GameLook1.imageset is actually obsolete as of 0.9.6042 (but still possible)
+                                XmlHandler.AddToXml(modFilePath, internalName);
+                            }
+                        }
+                        else if (!modFilePath.EndsWith(".txt", StringComparison.OrdinalIgnoreCase) && !modFilePath.EndsWith(".zip", StringComparison.OrdinalIgnoreCase)) // this is some other file
+                        {
+                            GenericFileHandler.CopyFileFromModDir(modFilePath);
                         }
                     }
-                    else if (internalName == Config.InternalLuaIncludePath)
-                    {
-                        ListHandler.AddToList(modFile, internalName);
-                    }
-                    else if (!modFile.EndsWith(".txt", StringComparison.OrdinalIgnoreCase) && !modFile.EndsWith(".zip", StringComparison.OrdinalIgnoreCase)) // this is some other file
-                    {
-                        GenericFileHandler.CopyFileFromModDir(modFile);
-                    }
+                    Console.WriteLine();
+                    CsvHandler.CreateGameFilesFromTables();
+                    ListHandler.CreateFilesFromLists();
+                    AssignmentListHandler.CreateFilesFromLists();
+                    ArrayHandler.CreateFilesFromArrays();
+                    XmlHandler.CreateFilesFromXml();
+
+                    Console.WriteLine();
+                    Console.WriteLine("Everything seems to be fine. Press Enter to close");
                 }
-
-                Console.WriteLine();
-
-                //foreach (string relevantPath in csvRecognisedPaths)
-                //{
-                //    LibraryHandler.CreateGameFileFromLibrary(relevantPath);
-                //}
-
-                LibraryHandler.CreateGameFilesFromLibrary();
-
-                ListHandler.CreateFileFromList(Config.InternalLuaIncludePath);
-
-                Console.WriteLine(" ");
-                Console.WriteLine("Everything seems to be fine. Press Enter to close");
             }
             catch (Exception e)
             {
-                Console.Error.WriteLine("Error:");
+                Console.Error.WriteLine("ERROR:");
                 Console.Error.WriteLine("{0}: {1}\n{2}", e.GetType().Name, e.Message, e.StackTrace);
             }
             Console.ReadLine();

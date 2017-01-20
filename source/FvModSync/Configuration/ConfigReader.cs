@@ -1,28 +1,33 @@
 ﻿namespace FVModSync.Configuration
 {
+    using System;
     using System.IO;
-    using System.Xml;
-    using System.Xml.Serialization;
+    using System.Linq;
+    using System.Xml.Linq;
 
     public class ConfigReader
     {
-        private const string ConfigFileName = "FVModSync.cfg";
+        private const string ConfigFileName = "FVModSync_Configuration.xml";
 
-        public static string[] LoadCsvPaths()
+        public static void InitConfig()
         {
             if (!File.Exists(ConfigFileName))
             {
-                throw new FileNotFoundException("Configuration file not found", ConfigFileName);
+                Console.WriteLine(ConfigFileName + " not found; using default values");
             }
-
-            XmlSerializer xmlSerializer = new XmlSerializer(typeof(Configuration));
-            using (XmlReader xmlReader = XmlReader.Create(ConfigFileName))
+            else
             {
-                Configuration configuration = (Configuration)xmlSerializer.Deserialize(xmlReader);
+                XDocument xconfig = XDocument.Load(ConfigFileName);
 
-                // TODO[pb] validate game version
-
-                return configuration.FileLocations;
+                ExternalConfig.GameVersion = xconfig.Root.Element("gameVersion").Value;
+                ExternalConfig.GameFilePrefix = xconfig.Root.Element("gameFilePrefix").Value;
+                ExternalConfig.GameFileBackupSuffix = xconfig.Root.Element("gameFileBackupSuffix").Value;
+                ExternalConfig.ExportFolderName = xconfig.Root.Element("exportFolderName").Value;
+                ExternalConfig.ModsSubfolderName = xconfig.Root.Element("modsSubfolderName").Value;
+                ExternalConfig.ModDefaultsSubfolderName = xconfig.Root.Element("modDefaultsFolderName").Value;
+                ExternalConfig.ConsoleVerbosity = xconfig.Root.Element("consoleVerbosity").Value;
+                ExternalConfig.csvFiles = xconfig.Root.Element("csvFiles").Descendants().Select(e => e.Value).ToList();
+                ExternalConfig.schemeFiles = xconfig.Root.Element("schemeFiles").Descendants().Select(e => e.Value).ToList();
             }
         }
     }

@@ -83,8 +83,6 @@
             string targetFilePath = ExternalConfig.GameFilePrefix + @"\scripts\mods\" + targetModDirName + @"\" + internalName;
 
             DoCopy(modFilePath, targetFilePath, true);
-
-
         }
 
         private static void DoCopy(string sourceFilePath, string targetFilePath, bool AddReqToInit)

@@ -26,7 +26,8 @@
                 ExternalConfig.ModsSubfolderName = xconfig.Root.Element("modsSubfolderName").Value;
                 ExternalConfig.ModDefaultsSubfolderName = xconfig.Root.Element("modDefaultsFolderName").Value;
                 ExternalConfig.ConsoleVerbosity = xconfig.Root.Element("consoleVerbosity").Value;
-                ExternalConfig.FileLocations = xconfig.Root.Element("fileLocations").Descendants().Select(e => e.Value).ToList();
+                ExternalConfig.csvFiles = xconfig.Root.Element("csvFiles").Descendants().Select(e => e.Value).ToList();
+                ExternalConfig.schemeFiles = xconfig.Root.Element("schemeFiles").Descendants().Select(e => e.Value).ToList();
             }
         }
     }

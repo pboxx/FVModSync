@@ -27,7 +27,7 @@ namespace FVModSync.Configuration
         private static string currentModDefaultsSubfolderName = "_defaults";
         private static string currentConsoleVerbosity = "normal";
 
-        private static List<string> currentFileLocations = new List<string> 
+        private static List<string> currentCsvFileLocations = new List<string> 
         {   
             @"\cfg\abilitiesButtons.csv",
             @"\cfg\actions.csv",
@@ -61,6 +61,13 @@ namespace FVModSync.Configuration
             @"\cfg\normal\tornado.csv",
         };
 
+        private static List<string> currentSchemeFileLocations = new List<string> 
+        {   
+            @"\gui\schemes\GameLook.scheme",
+            @"\gui\schemes\GameLook1.scheme",
+            @"\gui\schemes\Generic.scheme",
+        };
+
         public static string GameVersion = currentGameVersion;
         public static string GameFilePrefix = currentGameFilePrefix;
         public static string GameFileBackupSuffix = currentGameFileBackupSuffix;
@@ -68,6 +75,7 @@ namespace FVModSync.Configuration
         public static string ModsSubfolderName = currentModsSubfolderName;
         public static string ModDefaultsSubfolderName = currentModDefaultsSubfolderName;
         public static string ConsoleVerbosity = currentConsoleVerbosity;
-        public static List<string> FileLocations = currentFileLocations;
+        public static List<string> csvFiles = currentCsvFileLocations;
+        public static List<string> schemeFiles = currentSchemeFileLocations;
     }
 }

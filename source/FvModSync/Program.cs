@@ -25,7 +25,7 @@ namespace FVModSync
             {
                 string[] pakNames = InternalConfig.PakNames;
                 string[] modFiles = GenericFileHandler.SearchModFiles();
-                List<string> csvRecognisedPaths = ExternalConfig.FileLocations;
+                List<string> csvRecognisedPaths = ExternalConfig.csvFiles;
 
                 if (QuickBmsUnpacker.Unpack(pakNames))
                 {
@@ -65,7 +65,8 @@ namespace FVModSync
                         {
                             if (QuickBmsUnpacker.Unpack(new string[] { "gui" }))
                             {
-                                XmlHandler.AddToScheme(modFilePath, internalName);
+                                // adding to GameLook1.imageset is actually obsolete as of 0.9.6042 (but still possible)
+                                XmlHandler.AddToXml(modFilePath, internalName);
                             }
                         }
                         else if (!modFilePath.EndsWith(".txt", StringComparison.OrdinalIgnoreCase) && !modFilePath.EndsWith(".zip", StringComparison.OrdinalIgnoreCase)) // this is some other file
@@ -76,9 +77,9 @@ namespace FVModSync
                     Console.WriteLine();
                     CsvHandler.CreateGameFilesFromTables();
                     ListHandler.CreateFilesFromLists();
-                    XmlHandler.CreateFilesFromXml();
                     AssignmentListHandler.CreateFilesFromLists();
                     ArrayHandler.CreateFilesFromArrays();
+                    XmlHandler.CreateFilesFromXml();
 
                     Console.WriteLine();
                     Console.WriteLine("Everything seems to be fine. Press Enter to close");

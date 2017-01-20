@@ -9,39 +9,61 @@
 
     public class XmlHandler
     {
-        private static readonly Dictionary<string, XDocument> schemes = new Dictionary<string, XDocument>();
+        private static readonly Dictionary<string, XDocument> xmlDocs = new Dictionary<string, XDocument>();
 
-        public static void InitScheme(string internalName)
+        public static void InitXml(string internalName)
         {
-            GenericFileHandler.Init(AddToScheme, internalName);
+            GenericFileHandler.Init(AddToXml, internalName);
         }
 
-        public static void AddToScheme(string sourceFilePath, string internalName)
+        public static void AddToXml(string sourceFilePath, string internalName)
         {
 
-            if (!schemes.ContainsKey(internalName))
+            if (!xmlDocs.ContainsKey(internalName))
             {
-                schemes.Add(internalName, new XDocument());
-                InitScheme(internalName);
+                xmlDocs.Add(internalName, new XDocument());
+
+                if (ExternalConfig.schemeFiles.Contains(internalName))
+                {
+                    InitXml(internalName);
+                }
             }
 
-            XDocument scheme = schemes[internalName];
-            XDocument xmlFile = XDocument.Load(sourceFilePath);
+            XDocument xmlDoc = xmlDocs[internalName];
+            XDocument xmlExternalFile = XDocument.Load(sourceFilePath);
 
-            var fileRoot = xmlFile.Root;
-            var fileElements = fileRoot.Descendants();
+            var externalFileRoot = xmlExternalFile.Root;
+            var externalFileElements = externalFileRoot.Descendants();
 
-            if (scheme.Root == null)
+            if (xmlDoc.Root == null)
             {
-                scheme.Add(fileRoot);
-                scheme.Root.RemoveNodes();
+                xmlDoc.Add(externalFileRoot);
+                xmlDoc.Root.RemoveNodes();
             }
 
-            scheme.Root.Add(fileElements);
+            var xmlDocElements = xmlDoc.Root.Descendants();
+
+            bool nodeExists = false;
+
+            foreach (XNode enode in externalFileElements) 
+            {
+                foreach (XNode inode in xmlDocElements) 
+                {
+                    if (XNode.DeepEquals(enode, inode)) 
+                    {
+                        nodeExists = true;
+                    }
+                }
+                if (!nodeExists)
+                {
+                    xmlDoc.Root.Add(enode);
+                }
+            }
+
 
             if (ExternalConfig.ConsoleVerbosity != "quiet")
             {
-                Console.WriteLine("Add to scheme {0}: {1}", internalName, sourceFilePath);
+                Console.WriteLine("Add to {0}: {1}", internalName, sourceFilePath);
             } 
         }
 
@@ -51,15 +73,15 @@
             settings.Indent = true;
             settings.IndentChars = ("	");
 
-            foreach (KeyValuePair<string, XDocument> xmlscheme in schemes)
+            foreach (KeyValuePair<string, XDocument> xmlscheme in xmlDocs)
             {
                 var internalName = xmlscheme.Key;
                 var xmlFile = xmlscheme.Value;
 
-                string gameFilePath = ExternalConfig.GameFilePrefix + internalName;
+                string gameFilePath = ExternalConfig.GameFilePrefix + @"\" + internalName;
                 GenericFileHandler.BackupIfExists(gameFilePath);
 
-                string targetDir = ExternalConfig.GameFilePrefix + Path.GetDirectoryName(internalName);
+                string targetDir = ExternalConfig.GameFilePrefix + @"\" + Path.GetDirectoryName(internalName);
                 Directory.CreateDirectory(targetDir);
 
                 using (XmlWriter writer = XmlWriter.Create(gameFilePath, settings))

@@ -12,7 +12,7 @@
     {
         private static readonly Dictionary<string, Dictionary<string, Dictionary<string, string>>> libraryOfEntries = new Dictionary<string, Dictionary<string, Dictionary<string, string>>>();
         private static readonly Dictionary<string, Dictionary<string, Dictionary<string, bool>>> libraryOfModdedEntries = new Dictionary<string, Dictionary<string, Dictionary<string, bool>>>();
-        private static readonly List<string> csvRecognisedPaths = ExternalConfig.FileLocations;
+        private static readonly List<string> csvRecognisedPaths = ExternalConfig.csvFiles;
 
         public static void InitTable(string internalName)
         {

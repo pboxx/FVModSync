@@ -1,6 +1,9 @@
 ﻿namespace FVModSync.Extensions
 {
     using System.Linq;
+    using System;
+    using System.IO;
+    using System.Linq;
 
 	/// <summary>
 	/// Extensions for the <see cref="string"/> class.
@@ -21,17 +24,28 @@
 			string[] pathParts = path.Split('\\').Skip(2).ToArray();
 			string internalName = string.Join("\\", pathParts);
 
-			return internalName;
+            return internalName;
 		}
 
         public static string GetInternalScriptName(this string path)
         {
-            string[] pathParts = path.Split('\\').Skip(1).ToArray();
+            string[] pathParts = path.Split('\\').Skip(3).ToArray();
             string internalName = string.Join("\\", pathParts);
 
             return internalName;
         }
 
+        public static string GetModDirName(this string path)
+        {
+            string[] pathParts = path.Split('\\').Skip(1).ToArray();
+            string dirName = pathParts.First().CleanupLuaOperators();
+
+            return dirName;
+        }
+
+        /// <summary>
+        /// Removes stuff like - and . from file/directory names since the game cannot handle that.
+        /// </summary>
         public static string CleanupLuaOperators(this string input)
         {
             string[] doNotUseMe = { "-", ".", "*", "<", ">", "+", "=" };

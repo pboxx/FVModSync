@@ -4,7 +4,6 @@
     using FVModSync.Extensions;
     using System;
     using System.IO;
-    using System.Linq;
 
     public class GenericFileHandler
     {
@@ -79,13 +78,13 @@
         public static void CopyScriptFromModDir(string modFilePath)
         {
             string internalName = modFilePath.GetInternalScriptName();
-            string targetModDirName = internalName.Split('\\').First().CleanupLuaOperators();
-            string targetFileName = Path.GetFileName(internalName);
-            string targetFilePath = ExternalConfig.GameFilePrefix + @"\scripts\mods\" + targetModDirName + @"\" + targetFileName;
+            string targetModDirName = modFilePath.GetModDirName();
+
+            string targetFilePath = ExternalConfig.GameFilePrefix + @"\scripts\mods\" + targetModDirName + @"\" + internalName;
 
             DoCopy(modFilePath, targetFilePath);
 
-            string requireMe = @"requireMod('" + targetModDirName + "')\r\n";
+            string requireMe = @"requireMod('" + targetModDirName + "')";
             ListHandler.AddEntryToList(InternalConfig.InternalLuaInitPath, requireMe);
         }
 

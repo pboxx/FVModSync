@@ -65,7 +65,7 @@
                     string gameFilePath = ExternalConfig.GameFilePrefix + @"\" + internalName;
                     GenericFileHandler.BackupIfExists(gameFilePath);
 
-                    string targetDir = ExternalConfig.GameFilePrefix + Path.GetDirectoryName(internalName);
+                    string targetDir = ExternalConfig.GameFilePrefix + @"\" + Path.GetDirectoryName(internalName);
                     Directory.CreateDirectory(targetDir);
 
                     using (Stream gameFileStream = File.Open(gameFilePath, FileMode.Create))

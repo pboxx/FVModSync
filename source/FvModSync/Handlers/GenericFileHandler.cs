@@ -72,7 +72,7 @@
         {
             string targetFilePath = ExternalConfig.GameFilePrefix + @"\" + modFilePath.GetInternalName();
 
-            DoCopy(modFilePath, targetFilePath);
+            DoCopy(modFilePath, targetFilePath, false);
         }
 
         public static void CopyScriptFromModDir(string modFilePath)
@@ -82,13 +82,12 @@
 
             string targetFilePath = ExternalConfig.GameFilePrefix + @"\scripts\mods\" + targetModDirName + @"\" + internalName;
 
-            DoCopy(modFilePath, targetFilePath);
+            DoCopy(modFilePath, targetFilePath, true);
 
-            string requireMe = @"requireMod('" + targetModDirName + "')";
-            ListHandler.AddEntryToList(InternalConfig.InternalLuaInitPath, requireMe);
+
         }
 
-        private static void DoCopy(string sourceFilePath, string targetFilePath)
+        private static void DoCopy(string sourceFilePath, string targetFilePath, bool AddReqToInit)
         {
             if (File.Exists(targetFilePath))
             {
@@ -126,6 +125,14 @@
                 {
                     Console.WriteLine();
                     Console.WriteLine("Copy file {0} to {1} (new)", sourceFilePath, targetFilePath);
+                }
+
+                if (AddReqToInit)
+                {
+                    string targetModDirName = sourceFilePath.GetModDirName();
+                    string requireMe = @"requireMod('" + targetModDirName + "')";
+                    ListHandler.AddEntryToList(InternalConfig.InternalLuaInitPath, requireMe);
+                    Console.WriteLine();
                 }
             }
         }

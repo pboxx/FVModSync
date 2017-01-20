@@ -15,6 +15,7 @@ Changelog
 --
 v0.3beta:
 * Update script handling for game version 0.9.6042. This game version introduces breaking changes for script mods, hence the minor version increase. 
+* Implement automatic addition of script mods to scripts/core/init.lua
 * Update scheme/imageset handling for game version 0.9.6042 (which introduces custom imagesets for resources as well)
 
 v0.2.2beta:

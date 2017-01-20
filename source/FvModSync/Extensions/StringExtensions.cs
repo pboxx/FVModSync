@@ -1,11 +1,8 @@
 ﻿namespace FVModSync.Extensions
 {
     using System.Linq;
-    using System;
-    using System.IO;
-    using System.Linq;
 
-	/// <summary>
+    /// <summary>
 	/// Extensions for the <see cref="string"/> class.
 	/// </summary>
 	public static class StringExtensions

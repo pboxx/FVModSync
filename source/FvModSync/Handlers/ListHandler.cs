@@ -33,11 +33,12 @@
             if (!list.Contains(entry))
             {
                 list.Add(entry);
+
+                if (ExternalConfig.ConsoleVerbosity != "quiet")
+                {
+                    Console.WriteLine("Add entry to {0}: {1}", internalName, entry);
+                } 
             }
-            if (ExternalConfig.ConsoleVerbosity != "quiet")
-            {
-                Console.WriteLine("Add entry to {0}: {1}", internalName, entry);
-            } 
         }
 
         public static void AddFileContentsToList(string sourceFilePath, string internalName)

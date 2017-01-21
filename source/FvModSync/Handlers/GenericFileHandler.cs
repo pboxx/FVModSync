@@ -124,14 +124,13 @@
                     Console.WriteLine();
                     Console.WriteLine("Copy file {0} to {1} (new)", sourceFilePath, targetFilePath);
                 }
+            }
 
-                if (AddReqToInit)
-                {
-                    string targetModDirName = sourceFilePath.GetModDirName();
-                    string requireMe = @"requireMod('" + targetModDirName + "')";
-                    ListHandler.AddEntryToList(InternalConfig.InternalLuaInitPath, requireMe);
-                    Console.WriteLine();
-                }
+            if (AddReqToInit)
+            {
+                string targetModDirName = sourceFilePath.GetModDirName();
+                string requireMe = @"requireMod('" + targetModDirName + "')";
+                ListHandler.AddEntryToList(InternalConfig.InternalLuaInitPath, requireMe);
             }
         }
     }

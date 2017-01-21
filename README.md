@@ -8,7 +8,7 @@ This is currently in beta. See [Releases] for releases and notes, and the [devel
 
 ##Troubleshooting / Feedback
 
-You can post here in [Issues] or in the [Feedback thread] (Forest Village modding group on Steam).
+You can post here in [Issues] or in the [Feedback thread], Forest Village modding group on Steam.
 
 ##Warranty / Copyleft
 

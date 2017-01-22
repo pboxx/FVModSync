@@ -2,7 +2,7 @@
 
 A tool to install game mods for [Life is Feudal: Forest Village]. FVModSync enables users to organise their mods in a separate folder and copy them over automatically, rather than having to edit files in the game folder by hand. This ought to make it easier for players to use various different mods in parallel, at least until an official tool for this purpose is released. Also, it allows modders to include only the relevant data (i.e. content they have actually changed) in their mods, which improves compatibility between different mods.
 
-v0.3beta, for game version **0.9.6042** (2017-01-19)
+v0.3.1beta, for game version **0.9.6042** (2017-01-19)
 
 [Readme + Feedback auf Deutsch] (http://steamcommunity.com/groups/ForestVillageModding/discussions/0/144512875333095921/)
 
@@ -149,7 +149,8 @@ Notes for modders
 
 **Mod Defaults:**
 
-* As of 0.3beta (scripts) / 0.3.1beta (prioritised lists), FVModSync maintains mod defaults: little frameworks that can be installed to make modding more flexible. For example, a "Worker.surviveUpdate" default replacement that splits up that function into smaller sub-functions, which can in turn be overridden individually (instead of having to override the whole thing). For functions/scripts this is technically no different from all other scripts, except that FVModSync will check that the default is installed and warn the user when it's not.
+* As of 0.3beta (scripts) / 0.3.1beta (prioritised lists), FVModSync maintains mod defaults: little frameworks that can be installed to make modding more flexible. For example, a “Worker.surviveUpdate” default replacement that splits up that function into smaller sub-functions, which can in turn be overridden individually (instead of having to override the whole thing and thus clashing with every other mod that does the same). For functions/scripts this is technically no different from all other scripts, for lists it means FVModSync will check that the default is installed and then aggregate new values into it (so the end result is a list compiled from all mods that modify it). This is useful e.g. for introducing new kinds of clothes, tools, drinks and so on (as opposed to new recipes for the existing kinds).
+* Note that the default lists are parsed like text, line by line. This is a bit basic but since they have no index, I’d like to keep the splitting as simple as possible (and not introduce CSV-style pomp and circumstance here).
 
 **General:**
 

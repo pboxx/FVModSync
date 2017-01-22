@@ -80,7 +80,7 @@
 
                                         if (fieldValue != InternalConfig.IgnoreCsvFieldString)
                                         {
-                                            if (IsDirty(internalName, recordName, fieldName))
+                                            if (IsDirty(internalName, recordName, fieldName) && fieldName != "name")
                                             {
                                                 DirtyWords.Add(fieldName);
                                             }

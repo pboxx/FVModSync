@@ -13,6 +13,10 @@ Also, script mods are handled differently in 0.9.6042 -- most if not all script 
 
 Changelog
 --
+v0.3.1beta:
+* Maintain prioritised mod default lists
+* Handle core/init entries more precisely to account for manual fiddling 
+
 v0.3beta:
 * Update script handling for game version 0.9.6042. This game version introduces breaking changes for script mods, hence the minor version increase. 
 * Implement automatic addition of script mods to scripts/core/init.lua
@@ -83,7 +87,7 @@ Requirements
 
 3. You need to download and unzip [quickbms] in your Mods folder, in a sub-folder named “quickbms”. The [life_is_feudal.bms] script (rightclick > Save As) also needs to be in the quickbms folder. [1]
 
-4. Mods that you want to manage with FVModSync need to be installed in (Mods Folder)/mods (you can change the location in FVModSync_Configuration.xml if you want), and maintain the same directory structure and filenames that the game is using, so don’t change anything inside the individual mod folders. [2] 
+4. Mods that you want to manage with FVModSync need to be installed in (Mods Folder)/mods (you can change that location in the configuration if you want, see below), and maintain the same directory structure and filenames that the game is using. [2] 
 
 
 [1] quickbms is needed to export the unmodded CSV data from the game .pak files, to “fill in the blanks” so to speak (i.e. when you have mods that only modify three lines of a CSV, this unmodified data is copied over for the rest so we don’t end up with incomplete files). FVModSync will automatically run quickbms when it needs to, so you don’t need to do anything except put it where FVModSync can find it. 
@@ -142,6 +146,10 @@ Notes for modders
 * As of 0.3beta, you can add your own imagesets to the XML schemes: put a version of the file you want (most likely GameLook1.scheme) with only the root element + the entry for your imageset in /gui/schemes. You can add other elements that way too (not sure if that would be useful).
 * Note that as of game version 0.9.6042, custom resources can now get their icons from custom imagesets (this is new in resParams.csv, "icon"). So it's not necessary any more to add resource icons to GameLook1.imageset.
 * You can have several imagesets with the same name (e.g. “YourName.imageset” in several different mods); FVModSync will compile them into one. The latest modified version of the accompanying image file will overwrite the other instances.
+
+**Mod Defaults:**
+
+* As of 0.3beta (scripts) / 0.3.1beta (prioritised lists), FVModSync maintains mod defaults: little frameworks that can be installed to make modding more flexible. For example, a "Worker.surviveUpdate" default replacement that splits up that function into smaller sub-functions, which can in turn be overridden individually (instead of having to override the whole thing). For functions/scripts this is technically no different from all other scripts, except that FVModSync will check that the default is installed and warn the user when it's not.
 
 **General:**
 

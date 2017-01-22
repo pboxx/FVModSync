@@ -4,7 +4,7 @@ namespace FVModSync.Configuration
 
     public class InternalConfig
     {
-        public const string AppVersion = "0.3beta";
+        public const string AppVersion = "0.3.1beta";
         public const string VersionBlurb = "FVModSync " + AppVersion + "\nMod installer for Life is Feudal: Forest Village\n(c) pbox 2016\nPublished under the GPLv3 https://www.gnu.org/licenses/gpl-3.0.txt \n\n";
         public static readonly string[] PakNames = { "cfg", @"scripts\core" };
         public const string InternalLuaInitPath = @"scripts\core\init.lua";

@@ -19,6 +19,7 @@
 
         public static string[] SearchModFiles()
         {
+            // TODO put mod defaults at top of list no matter what their folder is named
             if (Directory.Exists(ExternalConfig.ModsSubfolderName))
             {
                 string[] modFiles = Directory.GetFiles(ExternalConfig.ModsSubfolderName, "*", SearchOption.AllDirectories);

@@ -1,0 +1,51 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<configuration>
+  <gameVersion>0.9.6042</gameVersion>
+  <gameFilePrefix>..</gameFilePrefix>
+  <gameFileBackupSuffix>.backup</gameFileBackupSuffix>
+  <exportFolderName>FVModSync_exportedFiles</exportFolderName>
+  <modsSubfolderName>mods</modsSubfolderName>
+  <modDefaultsFolderName>_defaults</modDefaultsFolderName>
+  <consoleVerbosity>normal</consoleVerbosity>  <!-- values: quiet | normal | verbose | debug -->
+  
+  <schemeFiles>
+    <fileLocation>gui\schemes\GameLook.scheme</fileLocation>
+    <fileLocation>gui\schemes\GameLook1.scheme</fileLocation>
+    <fileLocation>gui\schemes\Generic.scheme</fileLocation>
+  </schemeFiles>
+  <csvFiles>
+    <fileLocation>cfg\abilitiesButtons.csv</fileLocation>
+    <fileLocation>cfg\actions.csv</fileLocation>
+    <fileLocation>cfg\buttons.csv</fileLocation>
+    <fileLocation>cfg\dress.csv</fileLocation>
+    <fileLocation>cfg\firstPersonCameraSettings.csv</fileLocation>
+    <fileLocation>cfg\housesVisualResources.csv</fileLocation>
+    <fileLocation>cfg\land.csv</fileLocation>
+    <fileLocation>cfg\limits.csv</fileLocation>
+    <fileLocation>cfg\Localization.csv</fileLocation>
+    <!--<fileLocation>cfg\LOD.csv</fileLocation>-->
+    <!--<fileLocation>cfg\names.csv</fileLocation>-->
+    <fileLocation>cfg\nomads.csv</fileLocation>
+    <fileLocation>cfg\professionKit.csv</fileLocation>
+    <fileLocation>cfg\professionWithoutLaborerTasks.csv</fileLocation>
+    <fileLocation>cfg\resourcesLevelGeneration.csv</fileLocation>
+    <fileLocation>cfg\resourcesReplacement.csv</fileLocation>
+    <fileLocation>cfg\soundtracks.csv</fileLocation>
+    <!--<fileLocation>cfg\tips.csv</fileLocation>-->
+    <fileLocation>cfg\tools.csv</fileLocation>
+    <fileLocation>cfg\undergrowth.csv</fileLocation>
+    <fileLocation>cfg\normal\abilities.csv</fileLocation>
+    <fileLocation>cfg\normal\animals.csv</fileLocation>
+    <fileLocation>cfg\normal\buffs.csv</fileLocation>
+    <fileLocation>cfg\normal\craft.csv</fileLocation>
+    <fileLocation>cfg\normal\discovery.csv</fileLocation>
+    <fileLocation>cfg\normal\disease.csv</fileLocation>
+    <fileLocation>cfg\normal\foodDeclining.csv</fileLocation>
+    <fileLocation>cfg\normal\game.csv</fileLocation>
+    <fileLocation>cfg\normal\houses.csv</fileLocation>
+    <fileLocation>cfg\normal\plants.csv</fileLocation>
+    <fileLocation>cfg\normal\resources.csv</fileLocation>
+    <fileLocation>cfg\normal\resParams.csv</fileLocation>
+    <fileLocation>cfg\normal\tornado.csv</fileLocation>
+  </csvFiles>
+</configuration>

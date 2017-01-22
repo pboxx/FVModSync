@@ -5,16 +5,13 @@ namespace FVModSync.Configuration
     public class InternalConfig
     {
         public const string AppVersion = "0.3beta";
-        public const string VersionBlurb = "FVModSync" + AppVersion + "\nMod installer for Life is Feudal: Forest Village\n(c) pbox 2016\nPublished under the GPLv3 https://www.gnu.org/licenses/gpl-3.0.txt \n\n";
+        public const string VersionBlurb = "FVModSync " + AppVersion + "\nMod installer for Life is Feudal: Forest Village\n(c) pbox 2016\nPublished under the GPLv3 https://www.gnu.org/licenses/gpl-3.0.txt \n\n";
         public static readonly string[] PakNames = { "cfg", @"scripts\core" };
         public const string InternalLuaInitPath = @"scripts\core\init.lua";
         public const string InternalLuaConfigPath =  @"scripts\core\config.lua";
         public const string IgnoreCsvFieldString = @"fvsm:ignore";
-        public static readonly string[] modDefaultArrays = {    @"scripts\mods\_defaults\live\Worker_boozeOptions.lua", 
-                                                                @"scripts\mods\_defaults\live\Worker_dressOptions.lua",
-                                                                @"scripts\mods\_defaults\live\Worker_toolOptions.lua",
-                                                                @"scripts\mods\_defaults\buildings\SawmillSimple_craftRecipes.lua",
-                                                           };
+        public const string modDefaultListsDir = @"FVModSync_defaultLists";
+        public const string modDefaultListsTarget = @"scripts\mods\_defaults\";
     }
 
     public sealed class ExternalConfig

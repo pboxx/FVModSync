@@ -53,9 +53,9 @@ namespace FVModSync
                         {
                             AssignmentListHandler.AddToAssignmentList(modFilePath, internalName);
                         }
-                        else if (InternalConfig.modDefaultArrays.Contains(internalName))
+                        else if (modFilePath.Contains(InternalConfig.modDefaultListsDir))
                         {
-                            ArrayHandler.AddToArray(modFilePath, internalName);
+                            ArrayHandler.AddToArray(modFilePath);
                         }
                         else if (modFilePath.EndsWith(".lua"))
                         {

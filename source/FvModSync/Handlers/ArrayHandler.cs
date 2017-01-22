@@ -1,6 +1,7 @@
 ﻿namespace FVModSync.Handlers
 {
     using FVModSync.Configuration;
+    using FVModSync.Extensions;
     using System;
     using System.Collections.Generic;
     using System.IO;
@@ -10,11 +11,13 @@
     {
         private static readonly Dictionary<string, List<string>> arrays = new Dictionary<string, List<string>>();
 
-        public static void AddToArray(string sourceFilePath, string internalName)
+        public static void AddToArray(string sourceFilePath)
         {
-            if (InternalConfig.modDefaultArrays.Contains(internalName))
+            string internalName = sourceFilePath.GetInternalScriptName();
+
+            if (sourceFilePath.Contains(InternalConfig.modDefaultListsDir))
             {
-                string modDefaultFilePath = ExternalConfig.ModsSubfolderName + @"\" + ExternalConfig.ModDefaultsSubfolderName + internalName;
+                string modDefaultFilePath = ExternalConfig.ModsSubfolderName + @"\" + ExternalConfig.ModDefaultsSubfolderName + @"\scripts\" + internalName;
 
                 if (!File.Exists(modDefaultFilePath))
                 {
@@ -54,12 +57,19 @@
 
                 string content = reader.ReadToEnd();
                 string[] contentLines = content.Split(new[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
+                int index = 0;
 
                 foreach (string contentLine in contentLines)
                 {
-                    if (!array.Contains(contentLine) && contentLine.Trim() != "}")
+                    if (!array.Contains(contentLine) && contentLine.Trim() != "}" && !contentLine.StartsWith("--"))
                     {
-                        array.Add(contentLine);
+                        // array.Add(contentLine);
+                        array.Insert(index, contentLine);
+                        index = index + 1;
+                    }
+                    else
+                    {
+                        index = array.IndexOf(contentLine) + 1;
                     }
                 }
             }
@@ -78,10 +88,10 @@
 
                 if (arrayEntries.Any()) // dont write empty arrays
                 {
-                    string gameFilePath = ExternalConfig.GameFilePrefix + @"\" + internalName;
+                    string gameFilePath = ExternalConfig.GameFilePrefix + @"\" + InternalConfig.modDefaultListsTarget + internalName;
                     GenericFileHandler.BackupIfExists(gameFilePath);
 
-                    string targetDir = ExternalConfig.GameFilePrefix + @"\" + Path.GetDirectoryName(internalName);
+                    string targetDir = ExternalConfig.GameFilePrefix + @"\" + InternalConfig.modDefaultListsTarget + Path.GetDirectoryName(internalName);
                     Directory.CreateDirectory(targetDir);
 
                     using (Stream gameFileStream = File.Open(gameFilePath, FileMode.Create))

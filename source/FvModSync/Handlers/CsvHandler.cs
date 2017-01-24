@@ -255,6 +255,7 @@
             string key;
 
             // TODO handle other stuff with multiple identical keys (like LOD.csv etc; removed from config for now)
+            // dress.csv has been removed in 0.9.6042 but who knows whether they'll put it back
 
             if (internalName.EndsWith("dress.csv"))
             {

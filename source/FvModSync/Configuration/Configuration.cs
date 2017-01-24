@@ -29,7 +29,6 @@ namespace FVModSync.Configuration
             @"\cfg\abilitiesButtons.csv",
             @"\cfg\actions.csv",
             @"\cfg\buttons.csv",
-            @"\cfg\dress.csv",
             @"\cfg\firstPersonCameraSettings.csv",
             @"\cfg\housesVisualResources.csv",
             @"\cfg\land.csv",

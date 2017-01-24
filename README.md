@@ -16,6 +16,7 @@ Changelog
 v0.3.1beta:
 * Maintain prioritised mod default lists
 * Handle core/init entries more precisely to account for manual fiddling 
+* Remove support for cfg/dress.csv (since that has been removed)
 
 v0.3beta:
 * Update script handling for game version 0.9.6042. This game version introduces breaking changes for script mods, hence the minor version increase. 

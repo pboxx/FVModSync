@@ -61,15 +61,16 @@
 
                 foreach (string contentLine in contentLines)
                 {
-                    if (!array.Contains(contentLine) && contentLine.Trim() != "}" && !contentLine.StartsWith("--"))
+                    string line = contentLine.Trim();
+
+                    if (!array.Contains(line) && line != "}" && !line.StartsWith("--"))
                     {
-                        // array.Add(contentLine);
-                        array.Insert(index, contentLine);
+                        array.Insert(index, line);
                         index = index + 1;
                     }
                     else
                     {
-                        index = array.IndexOf(contentLine) + 1;
+                        index = array.IndexOf(line) + 1;
                     }
                 }
             }

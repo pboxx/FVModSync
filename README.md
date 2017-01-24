@@ -14,7 +14,7 @@ Also, script mods are handled differently in 0.9.6042 -- most if not all script 
 Changelog
 --
 v0.3.1beta:
-* Maintain prioritised mod default lists
+* Fix mod default lists for game version 0.9.6042
 * Handle core/init entries more precisely to account for manual fiddling 
 * Remove support for cfg/dress.csv (since that has been removed)
 
@@ -150,7 +150,7 @@ Notes for modders
 
 **Mod Defaults:**
 
-* As of 0.3beta (scripts) / 0.3.1beta (prioritised lists), FVModSync maintains mod defaults: little frameworks that can be installed to make modding more flexible. For example, a “Worker.surviveUpdate” default replacement that splits up that function into smaller sub-functions, which can in turn be overridden individually (instead of having to override the whole thing and thus clashing with every other mod that does the same). For functions/scripts this is technically no different from all other scripts, for lists it means FVModSync will check that the default is installed and then aggregate new values into it (so the end result is a list compiled from all mods that modify it). This is useful e.g. for introducing new kinds of clothes, tools, drinks and so on (as opposed to new recipes for the existing kinds).
+* As of 0.3beta (scripts) / 0.3.1beta (prioritised lists), FVModSync maintains mod defaults: little frameworks that can be installed to make modding more flexible. For example, a default replacement for the “Worker.surviveUpdate” function that splits it up into smaller functions, so that those can be changed individually (instead of having to override the whole thing and thus clashing with every other mod that does the same). For functions/scripts this is technically no different from all other scripts, for lists it means FVModSync will check that the default is installed and then aggregate any new values into it (so the end result is a list compiled from all mods that modify it). This is useful e.g. for introducing new kinds of clothes, tools, drinks and so on (as opposed to adding new recipes for the existing ones).
 * Note that the default lists are parsed like text, line by line. This is a bit basic but since they have no index, I’d like to keep the splitting as simple as possible (and not introduce CSV-style pomp and circumstance here).
 
 **General:**

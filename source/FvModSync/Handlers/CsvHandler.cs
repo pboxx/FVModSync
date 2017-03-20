@@ -190,10 +190,10 @@
                 var recordNames = tableContent.Keys;
                 var records = tableContent.Values;
 
-                string gameFilePath = ExternalConfig.GameFilePrefix + @"\" + internalName;
+                string gameFilePath = ExternalConfig.GameFilesPrefix + @"\" + internalName;
                 GenericFileHandler.BackupIfExists(gameFilePath);
 
-                string targetDir = ExternalConfig.GameFilePrefix + @"\" + Path.GetDirectoryName(internalName);
+                string targetDir = ExternalConfig.GameFilesPrefix + @"\" + Path.GetDirectoryName(internalName);
                 Directory.CreateDirectory(targetDir);
 
                 using (Stream gameFile = File.Open(gameFilePath, FileMode.Create))

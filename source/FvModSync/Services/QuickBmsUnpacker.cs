@@ -31,7 +31,7 @@ namespace FVModSync.Services
             {
                 // TODO find less pedestrian way (than just "if dir exists") to determine whether exports are valid
 
-                string pakPath = ExternalConfig.GameFilePrefix + @"\" + pakName + ".pak";
+                string pakPath = ExternalConfig.GameFilesPrefix + @"\" + pakName + ".pak";
                 string pakExportPath = ExternalConfig.ExportFolderName + @"\" + pakName;
                 string pakExportDir = Path.GetDirectoryName(pakExportPath);
 

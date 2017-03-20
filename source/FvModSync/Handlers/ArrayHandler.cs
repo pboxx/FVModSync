@@ -13,9 +13,9 @@
 
         public static void AddToArray(string sourceFilePath)
         {
-            string internalName = sourceFilePath.GetInternalScriptName();
+            string internalName = sourceFilePath.GetScriptName();
 
-            if (sourceFilePath.Contains(InternalConfig.modDefaultListsDir))
+            if (sourceFilePath.Contains(InternalConfig.ModDefaultListsDir))
             {
                 string modDefaultFilePath = ExternalConfig.ModsSubfolderName + @"\" + ExternalConfig.ModDefaultsSubfolderName + @"\scripts\" + internalName;
 
@@ -89,10 +89,10 @@
 
                 if (arrayEntries.Any()) // dont write empty arrays
                 {
-                    string gameFilePath = ExternalConfig.GameFilePrefix + @"\" + InternalConfig.modDefaultListsTarget + internalName;
+                    string gameFilePath = ExternalConfig.GameFilesPrefix + @"\" + InternalConfig.ModDefaultListsTarget + internalName;
                     GenericFileHandler.BackupIfExists(gameFilePath);
 
-                    string targetDir = ExternalConfig.GameFilePrefix + @"\" + InternalConfig.modDefaultListsTarget + Path.GetDirectoryName(internalName);
+                    string targetDir = ExternalConfig.GameFilesPrefix + @"\" + InternalConfig.ModDefaultListsTarget + Path.GetDirectoryName(internalName);
                     Directory.CreateDirectory(targetDir);
 
                     using (Stream gameFileStream = File.Open(gameFilePath, FileMode.Create))

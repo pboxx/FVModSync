@@ -20,7 +20,7 @@
                 XDocument xconfig = XDocument.Load(ConfigFileName);
 
                 ExternalConfig.GameVersion = xconfig.Root.Element("gameVersion").Value;
-                ExternalConfig.GameFilePrefix = xconfig.Root.Element("gameFilePrefix").Value;
+                ExternalConfig.GameFilesPrefix = xconfig.Root.Element("gameFilePrefix").Value;
                 ExternalConfig.GameFileBackupSuffix = xconfig.Root.Element("gameFileBackupSuffix").Value;
                 ExternalConfig.ExportFolderName = xconfig.Root.Element("exportFolderName").Value;
                 ExternalConfig.ModsSubfolderName = xconfig.Root.Element("modsSubfolderName").Value;

@@ -24,7 +24,7 @@
             return internalName;
 		}
 
-        public static string GetInternalScriptName(this string path)
+        public static string GetScriptName(this string path)
         {
             string[] pathParts = path.Split('\\').Skip(3).ToArray();
             string internalName = string.Join("\\", pathParts);
@@ -35,7 +35,7 @@
         public static string GetModDirName(this string path)
         {
             string[] pathParts = path.Split('\\').Skip(1).ToArray();
-            string dirName = pathParts.First().CleanupLuaOperators();
+            string dirName = pathParts.First().SanitizeFolderNames();
 
             return dirName;
         }
@@ -43,9 +43,9 @@
         /// <summary>
         /// Removes stuff like - and . from file/directory names since the game cannot handle that.
         /// </summary>
-        public static string CleanupLuaOperators(this string input)
+        public static string SanitizeFolderNames(this string input)
         {
-            string[] doNotUseMe = { "-", ".", "*", "<", ">", "+", "=" };
+            string[] doNotUseMe = { "-", ".", "*", "<", ">", "+", "=", " " };
             string clean = input;
 
             foreach (string doNotUse in doNotUseMe) {

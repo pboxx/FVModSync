@@ -3,10 +3,14 @@
     using FVModSync.Configuration;
     using FVModSync.Extensions;
     using System;
+    using System.Collections.Generic;
     using System.IO;
+    using System.Linq;
 
     public class GenericFileHandler
     {
+        private static readonly Dictionary<string, List<string>> storedFiles = new Dictionary<string, List<string>>();
+
         public static void BackupIfExists(string filePath)
         {
             if (File.Exists(filePath))
@@ -40,12 +44,88 @@
             }
         }
 
+        public static void InitStoredFile(string internalName)
+        {
+            Init(AppendContentsToStoredFile, internalName);
+        }
+
+        public static List<string> GetFile(string internalName)
+        {
+            if (!storedFiles.ContainsKey(internalName))
+            {
+                storedFiles.Add(internalName, new List<string>());
+                InitStoredFile(internalName);
+            }
+            List<string> storedFile = storedFiles[internalName];
+            return storedFile;
+        }
+
+        public static void AppendContentsToStoredFile(string sourceFilePath, string internalName)
+        {
+            List<string> storedFile = GetFile(internalName);
+
+            using (Stream stream = File.Open(sourceFilePath, FileMode.Open))
+            {
+                StreamReader reader = new StreamReader(stream);
+
+                string content = reader.ReadToEnd();
+                string[] contentLines = content.Split(new[] { "\r\n" }, StringSplitOptions.None);
+
+                foreach (string contentLine in contentLines)
+                {
+                    storedFile.Add(contentLine);
+                }
+
+                if (ExternalConfig.ConsoleVerbosity != "quiet")
+                {
+                    Console.WriteLine("Append file to {0}: {1}", internalName, sourceFilePath);
+                }
+            }
+        }
+
+        public static void AddLineToFile(string internalName, string entry)
+        {
+            List<string> storedFile = GetFile(internalName);
+
+            if (!storedFile.Contains(entry))
+            {
+                storedFile.Add(entry);
+
+                if (ExternalConfig.ConsoleVerbosity != "quiet")
+                {
+                    Console.WriteLine("Add entry to {0}: {1}", internalName, entry);
+                }
+            }
+        }
+
+        public static void WriteStoredFiles()
+        {
+            foreach (KeyValuePair<string, List<string>> storedFile in storedFiles)
+            {
+                var internalName = storedFile.Key;
+                var fileContent = storedFile.Value;
+
+                if (fileContent.Any()) // dont write empty arrays
+                {
+                    string gameFilePath = ExternalConfig.GameFilesPrefix + @"\" + internalName;
+                    BackupIfExists(gameFilePath);
+
+                    string targetDir = ExternalConfig.GameFilesPrefix + @"\" + Path.GetDirectoryName(internalName);
+                    Directory.CreateDirectory(targetDir);
+
+                    File.WriteAllLines(gameFilePath, fileContent.ToArray());
+
+                    Console.WriteLine("Write to game files: {0}", internalName);
+                }
+            }
+        }
+    
         public static void Init(Action<string, string> AddToTarget, string internalName)
         {
             string exportedFilePath = ExternalConfig.ExportFolderName + @"\" + internalName;
-            string gameFilePath = ExternalConfig.GameFilePrefix + @"\" + internalName;
+            string gameFilePath = ExternalConfig.GameFilesPrefix + @"\" + internalName;
 
-            if (File.Exists(gameFilePath))
+            if (File.Exists(gameFilePath) && internalName != InternalConfig.InternalLuaInitPath)
             {
                 if (ExternalConfig.ConsoleVerbosity != "quiet")
                 {
@@ -71,17 +151,17 @@
 
         public static void CopyFileFromModDir(string modFilePath)
         {
-            string targetFilePath = ExternalConfig.GameFilePrefix + @"\" + modFilePath.GetInternalName();
+            string targetFilePath = ExternalConfig.GameFilesPrefix + @"\" + modFilePath.GetInternalName();
 
             DoCopy(modFilePath, targetFilePath, false);
         }
 
         public static void CopyScriptFromModDir(string modFilePath)
         {
-            string internalName = modFilePath.GetInternalScriptName();
+            string internalName = modFilePath.GetScriptName();
             string targetModDirName = modFilePath.GetModDirName();
 
-            string targetFilePath = ExternalConfig.GameFilePrefix + @"\scripts\mods\" + targetModDirName + @"\" + internalName;
+            string targetFilePath = ExternalConfig.GameFilesPrefix + @"\" + InternalConfig.GameFilesModDir + @"\" + targetModDirName + @"\" + internalName;
 
             DoCopy(modFilePath, targetFilePath, true);
         }
@@ -131,7 +211,7 @@
             {
                 string targetModDirName = sourceFilePath.GetModDirName();
                 string requireMe = @"requireMod('" + targetModDirName + "')";
-                ListHandler.AddEntryToList(InternalConfig.InternalLuaInitPath, requireMe);
+                AddLineToFile(InternalConfig.InternalLuaInitPath, requireMe);
             }
         }
     }

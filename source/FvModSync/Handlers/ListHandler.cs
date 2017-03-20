@@ -52,18 +52,52 @@
                 string content = reader.ReadToEnd();
                 string[] contentLines = content.Split(new[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
 
+                //// 0.9.6109 hotfix -- http://steamcommunity.com/groups/ForestVillageModding/discussions/0/135511027313884138/#c135511455867199810
+                //
+                //string expInitFile = ExternalConfig.ExportFolderName + @"\" + InternalConfig.InternalLuaInitPath;
+                //string gameInitFile = ExternalConfig.GameFilePrefix + @"\" + InternalConfig.InternalLuaInitPath;
+                //
+                //if (sourceFilePath == expInitFile || sourceFilePath == gameInitFile)
+                //{
+                //    for (int line = 0; line < contentLines.Length; line++)
+                //    {
+                //        if (contentLines[line] == "for modName in iter(MOD_NAMES:split(\"|\")) do")
+                //        {
+                //            line = line + 2; // skip rest
+                //        }
+                //        else
+                //        {
+                //            list.Add(contentLines[line]);
+                //        }
+                //    }
+                //}
+                //else
+                //{
+                //    foreach (string contentLine in contentLines)
+                //    {
+                //        if (!list.Contains(contentLine))
+                //        {
+                //            list.Add(contentLine);
+                //            if (ExternalConfig.ConsoleVerbosity != "quiet")
+                //            {
+                //                Console.WriteLine("Add to {0}: {1}", internalName, sourceFilePath);
+                //            }
+                //        }
+                //    }
+                //}
+
                 foreach (string contentLine in contentLines)
                 {
                     if (!list.Contains(contentLine))
                     {
                         list.Add(contentLine);
+                        if (ExternalConfig.ConsoleVerbosity != "quiet")
+                        {
+                            Console.WriteLine("Add to {0}: {1}", internalName, sourceFilePath);
+                        }
                     }
                 }
             }
-            if (ExternalConfig.ConsoleVerbosity != "quiet") 
-            {
-                Console.WriteLine("Add to {0}: {1}", internalName, sourceFilePath);
-            } 
         }
 
         public static void CreateFilesFromLists()
@@ -73,12 +107,12 @@
                 var internalName = list.Key;
                 var listContent = list.Value;
 
-                if (listContent.Any()) // dont write empty arrays
+                if (listContent.Any()) // dont write empty lists
                 {
-                    string gameFilePath = ExternalConfig.GameFilePrefix + @"\" + internalName;
+                    string gameFilePath = ExternalConfig.GameFilesPrefix + @"\" + internalName;
                     GenericFileHandler.BackupIfExists(gameFilePath);
 
-                    string targetDir = ExternalConfig.GameFilePrefix + @"\" + Path.GetDirectoryName(internalName);
+                    string targetDir = ExternalConfig.GameFilesPrefix + @"\" + Path.GetDirectoryName(internalName);
                     Directory.CreateDirectory(targetDir);
 
                     using (Stream gameFileStream = File.Open(gameFilePath, FileMode.Create))

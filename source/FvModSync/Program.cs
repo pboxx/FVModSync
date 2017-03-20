@@ -47,13 +47,13 @@ namespace FVModSync
                         }
                         else if (internalName == InternalConfig.InternalLuaInitPath)
                         {
-                            ListHandler.AddFileContentsToList(modFilePath, internalName);
+                            GenericFileHandler.AppendContentsToStoredFile(modFilePath, internalName);
                         }
                         else if (internalName == InternalConfig.InternalLuaConfigPath)
                         {
                             AssignmentListHandler.AddToAssignmentList(modFilePath, internalName);
                         }
-                        else if (modFilePath.Contains(InternalConfig.modDefaultListsDir))
+                        else if (modFilePath.Contains(InternalConfig.ModDefaultListsDir))
                         {
                             ArrayHandler.AddToArray(modFilePath);
                         }
@@ -76,10 +76,11 @@ namespace FVModSync
                     }
                     Console.WriteLine();
                     CsvHandler.CreateGameFilesFromTables();
-                    ListHandler.CreateFilesFromLists();
-                    AssignmentListHandler.CreateFilesFromLists();
                     ArrayHandler.CreateFilesFromArrays();
                     XmlHandler.CreateFilesFromXml();
+                    ListHandler.CreateFilesFromLists();
+                    AssignmentListHandler.CreateFilesFromLists();
+                    GenericFileHandler.WriteStoredFiles();
 
                     Console.WriteLine();
                     Console.WriteLine("Everything seems to be fine. Press Enter to close");

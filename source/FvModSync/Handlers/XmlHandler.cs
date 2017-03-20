@@ -18,6 +18,11 @@
 
         public static void AddToXml(string sourceFilePath, string internalName)
         {
+            if (ExternalConfig.ConsoleVerbosity != "quiet")
+            {
+                Console.WriteLine();
+                Console.WriteLine("Parse {0} ...", sourceFilePath);
+            }
 
             if (!xmlDocs.ContainsKey(internalName))
             {
@@ -78,10 +83,10 @@
                 var internalName = xmlscheme.Key;
                 var xmlFile = xmlscheme.Value;
 
-                string gameFilePath = ExternalConfig.GameFilePrefix + @"\" + internalName;
+                string gameFilePath = ExternalConfig.GameFilesPrefix + @"\" + internalName;
                 GenericFileHandler.BackupIfExists(gameFilePath);
 
-                string targetDir = ExternalConfig.GameFilePrefix + @"\" + Path.GetDirectoryName(internalName);
+                string targetDir = ExternalConfig.GameFilesPrefix + @"\" + Path.GetDirectoryName(internalName);
                 Directory.CreateDirectory(targetDir);
 
                 using (XmlWriter writer = XmlWriter.Create(gameFilePath, settings))

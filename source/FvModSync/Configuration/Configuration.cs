@@ -4,7 +4,7 @@ namespace FVModSync.Configuration
 
     public class InternalConfig
     {
-        public const string AppVersion = "0.3.1beta";
+        public const string AppVersion = "0.4beta";
         public const string VersionBlurb = "FVModSync " + AppVersion + "\nMod installer for Life is Feudal: Forest Village\n(c) pbox 2016\nPublished under the GPLv3 https://www.gnu.org/licenses/gpl-3.0.txt \n\n";
         public static readonly string[] PakNames = { "cfg", "scripts" };
         public const string InternalLuaInitPath = @"scripts\main.lua";
@@ -17,7 +17,7 @@ namespace FVModSync.Configuration
 
     public sealed class ExternalConfig
     {
-        private static string currentGameVersion = "0.0.6042";
+        private static string currentGameVersion = "0.0.6112";
         private static string currentGameFilePrefix = "..";
         private static string currentGameFileBackupSuffix = ".backup";
         private static string currentExportFolderName = "FVModSync_exportedFiles";
